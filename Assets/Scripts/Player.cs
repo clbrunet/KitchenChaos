@@ -13,6 +13,16 @@ public class Player : MonoBehaviour
 
     private bool isWalking = false;
 
+    private void OnEnable()
+    {
+        gameInput.OnInteractAction += GameInput_OnInteractAction;
+    }
+
+    private void OnDisable()
+    {
+        gameInput.OnInteractAction -= GameInput_OnInteractAction;
+    }
+
     private void Update()
     {
         HandleMovements();
@@ -46,6 +56,22 @@ public class Player : MonoBehaviour
     }
 
     private void HandleInteractions()
+    {
+        Vector2 inputVector = gameInput.GetNormalizedInputVector();
+        Vector3 direction = new(inputVector.x, 0f, inputVector.y);
+        if (direction != Vector3.zero)
+        {
+            lastInteractionsDirection = direction;
+        }
+        const float INTERACTION_MAX_DISTANCE = 2f;
+        if (!Physics.Raycast(transform.position, lastInteractionsDirection, out RaycastHit raycastHit, INTERACTION_MAX_DISTANCE, countersLayerMask)
+            || !raycastHit.transform.TryGetComponent(out ClearCounter clearCounter))
+        {
+            return;
+        }
+    }
+
+    private void GameInput_OnInteractAction(object sender, System.EventArgs e)
     {
         Vector2 inputVector = gameInput.GetNormalizedInputVector();
         Vector3 direction = new(inputVector.x, 0f, inputVector.y);
