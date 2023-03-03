@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Assertions;
 
 public class Player : MonoBehaviour, IKitchenObjectParent
 {
@@ -27,21 +28,20 @@ public class Player : MonoBehaviour, IKitchenObjectParent
 
     private void Awake()
     {
-        if (Instance != null)
-        {
-            Debug.LogError("Multiple instances of Player");
-        }
+        Assert.IsNull(Instance, "Multiple instances of Player");
         Instance = this;
     }
 
     private void OnEnable()
     {
         gameInput.OnInteractAction += GameInput_OnInteractAction;
+        gameInput.OnInteractAlternateAction += GameInput_OnInteractAlternateAction;
     }
 
     private void OnDisable()
     {
         gameInput.OnInteractAction -= GameInput_OnInteractAction;
+        gameInput.OnInteractAlternateAction -= GameInput_OnInteractAlternateAction;
     }
 
     private void Update()
@@ -93,6 +93,14 @@ public class Player : MonoBehaviour, IKitchenObjectParent
         if (selectedCounter != null)
         {
             selectedCounter.Interact(this);
+        }
+    }
+
+    private void GameInput_OnInteractAlternateAction(object sender, System.EventArgs e)
+    {
+        if (selectedCounter != null)
+        {
+            selectedCounter.InteractAlternate(this);
         }
     }
 
