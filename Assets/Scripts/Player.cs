@@ -1,17 +1,35 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class Player : MonoBehaviour
 {
+    public static Player Instance { get; private set; }
+
     [SerializeField] private GameInput gameInput;
 
     [SerializeField] private float moveSpeed = 7f;
 
     [SerializeField] private LayerMask countersLayerMask;
-    private Vector3 lastInteractionsDirection = Vector3.zero;
 
     private bool isWalking = false;
+
+    private ClearCounter selectedCounter = null;
+    public event EventHandler<OnSelectedCounterChangedEventArgs> OnSelectedCounterChanged;
+    public class OnSelectedCounterChangedEventArgs
+    {
+        public ClearCounter selectedCounter;
+    }
+
+    private void Awake()
+    {
+        if (Instance != null)
+        {
+            Debug.LogError("Multiple instances of Player");
+        }
+        Instance = this;
+    }
 
     private void OnEnable()
     {
@@ -57,39 +75,36 @@ public class Player : MonoBehaviour
 
     private void HandleInteractions()
     {
-        Vector2 inputVector = gameInput.GetNormalizedInputVector();
-        Vector3 direction = new(inputVector.x, 0f, inputVector.y);
-        if (direction != Vector3.zero)
-        {
-            lastInteractionsDirection = direction;
-        }
         const float INTERACTION_MAX_DISTANCE = 2f;
-        if (!Physics.Raycast(transform.position, lastInteractionsDirection, out RaycastHit raycastHit, INTERACTION_MAX_DISTANCE, countersLayerMask)
+        if (!Physics.Raycast(transform.position, transform.forward, out RaycastHit raycastHit, INTERACTION_MAX_DISTANCE, countersLayerMask)
             || !raycastHit.transform.TryGetComponent(out ClearCounter clearCounter))
         {
+            SetSelectedCounter(null);
             return;
         }
+        SetSelectedCounter(clearCounter);
     }
 
     private void GameInput_OnInteractAction(object sender, System.EventArgs e)
     {
-        Vector2 inputVector = gameInput.GetNormalizedInputVector();
-        Vector3 direction = new(inputVector.x, 0f, inputVector.y);
-        if (direction != Vector3.zero)
+        if (selectedCounter != null)
         {
-            lastInteractionsDirection = direction;
+            selectedCounter.Interact();
         }
-        const float INTERACTION_MAX_DISTANCE = 2f;
-        if (!Physics.Raycast(transform.position, lastInteractionsDirection, out RaycastHit raycastHit, INTERACTION_MAX_DISTANCE, countersLayerMask)
-            || !raycastHit.transform.TryGetComponent(out ClearCounter clearCounter))
-        {
-            return;
-        }
-        clearCounter.Interact();
     }
 
     public bool IsWalking()
     {
         return isWalking;
+    }
+
+    private void SetSelectedCounter(ClearCounter clearCounter)
+    {
+        if (selectedCounter == clearCounter)
+        {
+            return;
+        }
+        selectedCounter = clearCounter;
+        OnSelectedCounterChanged?.Invoke(this, new OnSelectedCounterChangedEventArgs { selectedCounter = clearCounter });
     }
 }
