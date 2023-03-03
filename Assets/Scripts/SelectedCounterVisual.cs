@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class SelectedCounterVisual : MonoBehaviour
 {
-    [SerializeField] private ClearCounter clearCounter;
-    [SerializeField] private GameObject selectedMesh;
+    [SerializeField] private BaseCounter baseCounter;
+    [SerializeField] private GameObject[] selectedMeshes;
 
     private void Start()
     {
@@ -14,6 +14,9 @@ public class SelectedCounterVisual : MonoBehaviour
 
     private void Player_OnSelectedCounterChanged(object sender, Player.OnSelectedCounterChangedEventArgs e)
     {
-        selectedMesh.SetActive(e.selectedCounter == clearCounter);
+        foreach (GameObject selectedMesh in selectedMeshes)
+        {
+            selectedMesh.SetActive(e.selectedCounter == baseCounter);
+        }
     }
 }

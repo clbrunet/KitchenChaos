@@ -15,11 +15,11 @@ public class Player : MonoBehaviour, IKitchenObjectParent
 
     private bool isWalking = false;
 
-    private ClearCounter selectedCounter = null;
+    private BaseCounter selectedCounter = null;
     public event EventHandler<OnSelectedCounterChangedEventArgs> OnSelectedCounterChanged;
     public class OnSelectedCounterChangedEventArgs
     {
-        public ClearCounter selectedCounter;
+        public BaseCounter selectedCounter;
     }
 
     [SerializeField] private Transform kitchenObjectHoldPoint;
@@ -80,12 +80,12 @@ public class Player : MonoBehaviour, IKitchenObjectParent
     {
         const float INTERACTION_MAX_DISTANCE = 2f;
         if (!Physics.Raycast(transform.position, transform.forward, out RaycastHit raycastHit, INTERACTION_MAX_DISTANCE, countersLayerMask)
-            || !raycastHit.transform.TryGetComponent(out ClearCounter clearCounter))
+            || !raycastHit.transform.TryGetComponent(out BaseCounter baseCounter))
         {
             SetSelectedCounter(null);
             return;
         }
-        SetSelectedCounter(clearCounter);
+        SetSelectedCounter(baseCounter);
     }
 
     private void GameInput_OnInteractAction(object sender, System.EventArgs e)
@@ -101,19 +101,24 @@ public class Player : MonoBehaviour, IKitchenObjectParent
         return isWalking;
     }
 
-    private void SetSelectedCounter(ClearCounter clearCounter)
+    private void SetSelectedCounter(BaseCounter baseCounter)
     {
-        if (selectedCounter == clearCounter)
+        if (selectedCounter == baseCounter)
         {
             return;
         }
-        selectedCounter = clearCounter;
-        OnSelectedCounterChanged?.Invoke(this, new OnSelectedCounterChangedEventArgs { selectedCounter = clearCounter });
+        selectedCounter = baseCounter;
+        OnSelectedCounterChanged?.Invoke(this, new OnSelectedCounterChangedEventArgs { selectedCounter = baseCounter });
     }
 
     public Transform GetKitchenObjectParent()
     {
         return kitchenObjectHoldPoint;
+    }
+
+    public KitchenObject GetKitchenObject()
+    {
+        return kitchenObject;
     }
 
     public void SetKitchenObject(KitchenObject kitchenObject)
