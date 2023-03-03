@@ -2,14 +2,42 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ClearCounter : MonoBehaviour
+public class ClearCounter : MonoBehaviour, IKitchenObjectParent
 {
     [SerializeField] private Transform topPoint;
     [SerializeField] private KitchenObjectSO kitchenObjectSO;
 
-    public void Interact()
+    private KitchenObject kitchenObject;
+
+    public void Interact(Player player)
     {
-        KitchenObject kitchenObject = Instantiate(kitchenObjectSO.prefab, topPoint);
-        Debug.Log("Interaction with " + name + ", " + kitchenObject.GetKitchenObjectSO().objectName + " spawned");
+        if (kitchenObject == null)
+        {
+            Instantiate(kitchenObjectSO.prefab).SetParent(this);
+        }
+        else
+        {
+            kitchenObject.SetParent(player);
+        }
+    }
+
+    public Transform GetKitchenObjectParent()
+    {
+        return topPoint;
+    }
+
+    public void SetKitchenObject(KitchenObject kitchenObject)
+    {
+        this.kitchenObject = kitchenObject;
+    }
+
+    public void ClearKitchenObject()
+    {
+        kitchenObject = null;
+    }
+
+    public bool HasKitchenObject()
+    {
+        return kitchenObject != null;
     }
 }
