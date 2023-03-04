@@ -32,7 +32,7 @@ public class CuttingCounter : BaseCounter
 
     public override void InteractAlternate(Player player)
     {
-        if (!HasKitchenObject())
+        if (!HasKitchenObject() || player.HasKitchenObject())
         {
             return;
         }
