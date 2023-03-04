@@ -3,16 +3,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CuttingCounter : BaseCounter
+public class CuttingCounter : BaseCounter, IHasProgression
 {
     [SerializeField] private CuttingRecipeSO[] cuttingRecipeSOs;
 
     private int cutsCount;
-    public event EventHandler<OnCutEventArgs> OnCut;
-    public class OnCutEventArgs : EventArgs
-    {
-        public float cutsProgress;
-    }
+    public event EventHandler OnCut;
+
+    public event EventHandler<IHasProgression.OnProgressionEventArgs> OnProgression;
 
     public override void Interact(Player player)
     {
@@ -48,7 +46,7 @@ public class CuttingCounter : BaseCounter
     {
         foreach (CuttingRecipeSO cuttingRecipeSO in cuttingRecipeSOs)
         {
-            if (cuttingRecipeSO.input == input)
+            if (input == cuttingRecipeSO.input)
             {
                 return cuttingRecipeSO;
             }
@@ -58,6 +56,7 @@ public class CuttingCounter : BaseCounter
 
     private void Cut(CuttingRecipeSO recipe)
     {
+        OnCut?.Invoke(this, EventArgs.Empty);
         cutsCount++;
         if (cutsCount == recipe.cutsNeeded)
         {
@@ -65,9 +64,6 @@ public class CuttingCounter : BaseCounter
             Instantiate(recipe.output.prefab).SetParent(this);
             cutsCount = 0;
         }
-        OnCut?.Invoke(this, new OnCutEventArgs
-        {
-            cutsProgress = (float)cutsCount / (float)recipe.cutsNeeded
-        });
+        OnProgression?.Invoke(this, new IHasProgression.OnProgressionEventArgs((float)cutsCount / (float)recipe.cutsNeeded));
     }
 }
