@@ -11,21 +11,19 @@ public class ContainerCounter : BaseCounter
 
     public override void Interact(Player player)
     {
-        if (!player.HasKitchenObject())
+        if (!player.HasKitchenObject() && !HasKitchenObject())
         {
-            if (HasKitchenObject())
-            {
-                kitchenObject.SetParent(player);
-            }
-            else
-            {
-                Instantiate(kitchenObjectSO.prefab).SetParent(player);
-                OnObjectInstantiation?.Invoke(this, EventArgs.Empty);
-            }
+            Instantiate(kitchenObjectSO.prefab).SetParent(player);
+            OnObjectInstantiation?.Invoke(this, EventArgs.Empty);
+            return;
         }
-        else if (!HasKitchenObject())
+        if (TryGrabKitchenObject(player))
         {
-            player.GetKitchenObject().SetParent(this);
+            return;
+        }
+        if (TryPutKitchenObject(player))
+        {
+            return;
         }
     }
 }

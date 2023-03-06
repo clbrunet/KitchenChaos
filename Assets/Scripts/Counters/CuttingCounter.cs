@@ -14,17 +14,17 @@ public class CuttingCounter : BaseCounter, IHasProgression
 
     public override void Interact(Player player)
     {
-        if (player.HasKitchenObject() && !HasKitchenObject())
+        if (cutsCount != 0)
         {
-            player.GetKitchenObject().SetParent(this);
+            return;
         }
-        else if (!player.HasKitchenObject() && HasKitchenObject())
+        if (TryGrabKitchenObject(player))
         {
-            CuttingRecipeSO recipe = GetRecipe(kitchenObject.GetKitchenObjectSO());
-            if (recipe == null || cutsCount == 0)
-            {
-                kitchenObject.SetParent(player);
-            }
+            return;
+        }
+        if (TryPutKitchenObject(player))
+        {
+            return;
         }
     }
 

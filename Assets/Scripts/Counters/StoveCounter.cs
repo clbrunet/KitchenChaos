@@ -16,27 +16,33 @@ public class StoveCounter : BaseCounter, IHasProgression
 
     public override void Interact(Player player)
     {
-        if (player.HasKitchenObject() && !HasKitchenObject())
-        {
-            StoveRecipeSO recipe = GetRecipe(player.GetKitchenObject().GetKitchenObjectSO());
-            if (recipe == null)
-            {
-                return;
-            }
-            player.GetKitchenObject().SetParent(this);
-            cookCoroutine = StartCoroutine(Cook(recipe));
-        }
-        else if (!player.HasKitchenObject() && HasKitchenObject())
+        if (HasKitchenObject())
         {
             StoveRecipeSO recipe = GetRecipe(kitchenObject.GetKitchenObjectSO());
             if (recipe != null)
             {
                 return;
             }
-            StopCoroutine(cookCoroutine);
-            OnProgression?.Invoke(this, new IHasProgression.OnProgressionEventArgs(0f));
-            OnTurningOff?.Invoke(this, EventArgs.Empty);
-            kitchenObject.SetParent(player);
+            if (TryGrabKitchenObject(player))
+            {
+                StopCoroutine(cookCoroutine);
+                OnProgression?.Invoke(this, new IHasProgression.OnProgressionEventArgs(0f));
+                OnTurningOff?.Invoke(this, EventArgs.Empty);
+                return;
+            }
+        }
+        if (player.HasKitchenObject())
+        {
+            StoveRecipeSO recipe = GetRecipe(player.GetKitchenObject().GetKitchenObjectSO());
+            if (recipe == null)
+            {
+                return;
+            }
+            if (TryPutKitchenObject(player))
+            {
+                cookCoroutine = StartCoroutine(Cook(recipe));
+                return;
+            }
         }
     }
 

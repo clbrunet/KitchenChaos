@@ -47,7 +47,7 @@ public class Player : MonoBehaviour, IKitchenObjectParent
     private void Update()
     {
         HandleMovements();
-        HandleInteractions();
+        HandleCounterSelection();
     }
 
     private void HandleMovements()
@@ -76,7 +76,7 @@ public class Player : MonoBehaviour, IKitchenObjectParent
         }
     }
 
-    private void HandleInteractions()
+    private void HandleCounterSelection()
     {
         const float INTERACTION_MAX_DISTANCE = 2f;
         if (!Physics.Raycast(transform.position, transform.forward, out RaycastHit raycastHit, INTERACTION_MAX_DISTANCE, countersLayerMask)
