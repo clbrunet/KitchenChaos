@@ -34,7 +34,7 @@ public class StoveCounter : BaseCounter, IHasProgression
                 return;
             }
             StopCoroutine(cookCoroutine);
-            OnProgression(this, new IHasProgression.OnProgressionEventArgs(0f));
+            OnProgression?.Invoke(this, new IHasProgression.OnProgressionEventArgs(0f));
             OnTurningOff?.Invoke(this, EventArgs.Empty);
             kitchenObject.SetParent(player);
         }
@@ -60,7 +60,7 @@ public class StoveCounter : BaseCounter, IHasProgression
         {
             yield return null;
             elapsed += Time.deltaTime;
-            OnProgression(this, new IHasProgression.OnProgressionEventArgs(elapsed / recipe.cookTime));
+            OnProgression?.Invoke(this, new IHasProgression.OnProgressionEventArgs(elapsed / recipe.cookTime));
         }
         kitchenObject.DestroySelf();
         Instantiate(recipe.cooked.prefab).SetParent(this);
@@ -69,7 +69,7 @@ public class StoveCounter : BaseCounter, IHasProgression
         {
             yield return null;
             elapsed += Time.deltaTime;
-            OnProgression(this, new IHasProgression.OnProgressionEventArgs(elapsed / recipe.cookTime));
+            OnProgression?.Invoke(this, new IHasProgression.OnProgressionEventArgs(elapsed / recipe.cookTime));
         }
         kitchenObject.DestroySelf();
         Instantiate(recipe.burned.prefab).SetParent(this);
