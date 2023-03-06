@@ -9,7 +9,7 @@ public class PlatesCounterVisual : MonoBehaviour
     private PlatesCounter platesCounter;
     [SerializeField] private Transform topPoint;
 
-    private Stack<GameObject> plates = new Stack<GameObject>();
+    private readonly Stack<GameObject> plates = new();
 
     private void Awake()
     {
