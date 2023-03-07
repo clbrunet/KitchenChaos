@@ -32,4 +32,9 @@ public class PlateKitchenObject : KitchenObject
         OnIngredientAdded?.Invoke(this, new OnIngredientAddedEventArgs(ingredient));
         return true;
     }
+
+    public HashSet<KitchenObjectSO> GetIngredients()
+    {
+        return ingredients;
+    }
 }

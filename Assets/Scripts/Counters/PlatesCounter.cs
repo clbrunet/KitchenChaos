@@ -8,21 +8,21 @@ public class PlatesCounter : BaseCounter
     [SerializeField] private KitchenObjectSO plateSO;
 
     private float elapsed = 0f;
-    private const float plateSpawnDuration = 5f;
+    private const float PLATE_SPAWN_DURATION = 5f;
     private int platesCount = 0;
-    [SerializeField] private int maxPlatesCount = 5;
+    private const int MAX_PLATES_COUNT = 5;
 
     public event EventHandler OnPlateSpawn;
     public event EventHandler OnPlateGrab;
 
     private void Update()
     {
-        if (platesCount == maxPlatesCount)
+        if (platesCount == MAX_PLATES_COUNT)
         {
             return;
         }
         elapsed += Time.deltaTime;
-        if (elapsed > plateSpawnDuration)
+        if (elapsed > PLATE_SPAWN_DURATION)
         {
             elapsed = 0f;
             platesCount++;
