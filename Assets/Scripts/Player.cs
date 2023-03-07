@@ -26,6 +26,8 @@ public class Player : MonoBehaviour, IKitchenObjectParent
     [SerializeField] private Transform kitchenObjectHoldPoint;
     private KitchenObject kitchenObject;
 
+    public event EventHandler OnObjectPickup;
+
     private void Awake()
     {
         Assert.IsNull(Instance, "Multiple instances of Player");
@@ -132,6 +134,10 @@ public class Player : MonoBehaviour, IKitchenObjectParent
     public void SetKitchenObject(KitchenObject kitchenObject)
     {
         this.kitchenObject = kitchenObject;
+        if (kitchenObject != null)
+        {
+            OnObjectPickup?.Invoke(this, EventArgs.Empty);
+        }
     }
 
     public void ClearKitchenObject()

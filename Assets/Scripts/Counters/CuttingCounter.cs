@@ -12,6 +12,8 @@ public class CuttingCounter : BaseCounter, IHasProgression
 
     public event EventHandler<IHasProgression.OnProgressionEventArgs> OnProgression;
 
+    public static event EventHandler OnAnyCut;
+
     public override void Interact(Player player)
     {
         if (cutsCount != 0)
@@ -57,6 +59,7 @@ public class CuttingCounter : BaseCounter, IHasProgression
     private void Cut(CuttingRecipeSO recipe)
     {
         OnCut?.Invoke(this, EventArgs.Empty);
+        OnAnyCut?.Invoke(this, EventArgs.Empty);
         cutsCount++;
         if (cutsCount == recipe.cutsNeeded)
         {
