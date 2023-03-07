@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -13,6 +14,27 @@ public class DeliveryManager : MonoBehaviour
     private float elapsed = 0f;
     private const float WAITING_RECIPE_SPAWN_DURATION = 4f;
 
+    public event EventHandler<OnWaitingRecipeAddedEventArgs> OnWaitingRecipeAdded;
+    public class OnWaitingRecipeAddedEventArgs
+    {
+        public RecipeSO recipe;
+
+        public OnWaitingRecipeAddedEventArgs(RecipeSO recipe)
+        {
+            this.recipe = recipe;
+        }
+    }
+    public event EventHandler<OnWaitingRecipeDeliveredEventArgs> OnWaitingRecipeDelivered;
+    public class OnWaitingRecipeDeliveredEventArgs
+    {
+        public int index;
+
+        public OnWaitingRecipeDeliveredEventArgs(int index)
+        {
+            this.index = index;
+        }
+    }
+
     private void Awake()
     {
         Assert.IsNull(Instance, "Multiple instances of DeliveryManager");
@@ -24,7 +46,7 @@ public class DeliveryManager : MonoBehaviour
         const int STARTING_RECIPES_COUNT = 2;
         for (int i = 0; i < STARTING_RECIPES_COUNT; i++)
         {
-            waitingRecipeSOs.Add(GetRandomRecipe());
+            AddRandomWaitingRecipe();
         }
     }
 
@@ -38,13 +60,15 @@ public class DeliveryManager : MonoBehaviour
         if (elapsed > WAITING_RECIPE_SPAWN_DURATION)
         {
             elapsed = 0f;
-            waitingRecipeSOs.Add(GetRandomRecipe());
+            AddRandomWaitingRecipe();
         }
     }
 
-    private RecipeSO GetRandomRecipe()
+    private void AddRandomWaitingRecipe()
     {
-        return recipeListSO.recipeSOs[Random.Range(0, recipeListSO.recipeSOs.Count)];
+        RecipeSO recipe = recipeListSO.recipeSOs[UnityEngine.Random.Range(0, recipeListSO.recipeSOs.Count)];
+        waitingRecipeSOs.Add(recipe);
+        OnWaitingRecipeAdded?.Invoke(this, new OnWaitingRecipeAddedEventArgs(recipe));
     }
 
     public bool Deliver(PlateKitchenObject plate)
@@ -70,6 +94,7 @@ public class DeliveryManager : MonoBehaviour
             if (isValid)
             {
                 waitingRecipeSOs.RemoveAt(i);
+                OnWaitingRecipeDelivered?.Invoke(this, new OnWaitingRecipeDeliveredEventArgs(i));
                 return true;
             }
             i++;
