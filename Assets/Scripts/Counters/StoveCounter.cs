@@ -65,6 +65,11 @@ public class StoveCounter : BaseCounter, IHasProgression
         while (elapsed < recipe.cookTime)
         {
             yield return null;
+            if (!GameManager.Instance.IsPlaying())
+            {
+                OnTurningOff?.Invoke(this, EventArgs.Empty);
+                yield break;
+            }
             elapsed += Time.deltaTime;
             OnProgression?.Invoke(this, new IHasProgression.OnProgressionEventArgs(elapsed / recipe.cookTime));
         }
@@ -74,6 +79,11 @@ public class StoveCounter : BaseCounter, IHasProgression
         while (elapsed < recipe.cookTime)
         {
             yield return null;
+            if (!GameManager.Instance.IsPlaying())
+            {
+                OnTurningOff?.Invoke(this, EventArgs.Empty);
+                yield break;
+            }
             elapsed += Time.deltaTime;
             OnProgression?.Invoke(this, new IHasProgression.OnProgressionEventArgs(elapsed / recipe.cookTime));
         }

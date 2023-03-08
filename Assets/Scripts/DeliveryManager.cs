@@ -38,6 +38,8 @@ public class DeliveryManager : MonoBehaviour
     public event EventHandler OnDeliverySuccess;
     public event EventHandler OnDeliveryFail;
 
+    private int successfulDeliveryCount = 0;
+
     private void Awake()
     {
         Assert.IsNull(Instance, "Multiple instances of DeliveryManager");
@@ -99,11 +101,17 @@ public class DeliveryManager : MonoBehaviour
                 waitingRecipeSOs.RemoveAt(i);
                 OnWaitingRecipeDelivered?.Invoke(this, new OnWaitingRecipeDeliveredEventArgs(i));
                 OnDeliverySuccess?.Invoke(this, EventArgs.Empty);
+                successfulDeliveryCount++;
                 return true;
             }
             i++;
         }
         OnDeliveryFail?.Invoke(this, EventArgs.Empty);
         return false;
+    }
+
+    public int GetSuccessfulDeliveryCount()
+    {
+        return successfulDeliveryCount;
     }
 }

@@ -17,7 +17,7 @@ public class GameManager : MonoBehaviour
     }
     private State state = State.WaitingToStart;
 
-    private float waitingToStartTimer = 1f;
+    private float waitingToStartTimer = 0.3f;
     private float countdownToStartTimer = 3f;
     private float gamePlayingTimer = 10f;
 

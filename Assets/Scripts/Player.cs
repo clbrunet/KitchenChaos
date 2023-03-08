@@ -120,6 +120,10 @@ public class Player : MonoBehaviour, IKitchenObjectParent
 
     public bool IsWalking()
     {
+        if (!GameManager.Instance.IsPlaying())
+        {
+            return false;
+        }
         return isWalking;
     }
 
