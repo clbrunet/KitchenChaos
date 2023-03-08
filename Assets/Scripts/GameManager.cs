@@ -19,7 +19,8 @@ public class GameManager : MonoBehaviour
 
     private float waitingToStartTimer = 0.3f;
     private float countdownToStartTimer = 3f;
-    private float gamePlayingTimer = 10f;
+    private float gamePlayingTimerMax = 10f;
+    private float gamePlayingTimer;
 
     public event EventHandler<OnStateChangedEventArgs> OnStateChanged;
     public class OnStateChangedEventArgs : EventArgs
@@ -36,6 +37,7 @@ public class GameManager : MonoBehaviour
     {
         Assert.IsNull(Instance, "Multiple instances of GameManager");
         Instance = this;
+        gamePlayingTimer = gamePlayingTimerMax;
     }
 
     private void Update()
@@ -84,5 +86,10 @@ public class GameManager : MonoBehaviour
     public float GetCountdownToStartTimer()
     {
         return countdownToStartTimer;
+    }
+
+    public float GetNormalizedGamePlayingTimer()
+    {
+        return 1 - (gamePlayingTimer / gamePlayingTimerMax);
     }
 }
