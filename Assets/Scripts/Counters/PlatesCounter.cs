@@ -17,7 +17,7 @@ public class PlatesCounter : BaseCounter
 
     private void Update()
     {
-        if (platesCount == MAX_PLATES_COUNT)
+        if (!GameManager.Instance.IsPlaying() || platesCount == MAX_PLATES_COUNT)
         {
             return;
         }
