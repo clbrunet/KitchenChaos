@@ -48,6 +48,15 @@ public class DeliveryManager : MonoBehaviour
 
     private void Start()
     {
+        GameManager.Instance.OnStateChanged += GameManager_OnStateChanged;
+    }
+
+    private void GameManager_OnStateChanged(object sender, GameManager.OnStateChangedEventArgs e)
+    {
+        if (e.state != GameManager.State.GamePlaying)
+        {
+            return;
+        }
         const int STARTING_RECIPES_COUNT = 2;
         for (int i = 0; i < STARTING_RECIPES_COUNT; i++)
         {
