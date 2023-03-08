@@ -25,7 +25,6 @@ public class PlayerSound : MonoBehaviour
         {
             return;
         }
-        const float VOLUME = 1f;
-        AudioSource.PlayClipAtPoint(footstepClips[Random.Range(0, footstepClips.Length)], transform.position, VOLUME);
+        SoundManager.Instance.PlayClips(footstepClips, transform.position);
     }
 }

@@ -25,6 +25,17 @@ public class StoveCounterSound : MonoBehaviour
         stoveCounter.OnTurningOff -= StoveCounter_OnTurningOff;
     }
 
+    private void Start()
+    {
+        audioSource.volume = SoundManager.Instance.GetVolume();
+        SoundManager.Instance.OnSoundEffectsVolumeChanged += SoundManager_OnSoundEffectsVolumeChanged;
+    }
+
+    private void SoundManager_OnSoundEffectsVolumeChanged(object sender, SoundManager.OnSoundEffectsVolumeChangedEventArgs e)
+    {
+        audioSource.volume = e.volume;
+    }
+
     private void StoveCounter_OnTurningOn(object sender, System.EventArgs e)
     {
         audioSource.Play();
