@@ -9,11 +9,22 @@ public class SoundManager : MonoBehaviour
     private void Start()
     {
         Player.Instance.OnObjectPickup += Player_OnObjectPickup;
-        BaseCounter.OnObjectDrop += BaseCounter_OnObjectDrop;
-        CuttingCounter.OnAnyCut += CuttingCounter_OnAnyCut;
         DeliveryManager.Instance.OnDeliverySuccess += DeliveryManager_OnDeliverySuccess;
         DeliveryManager.Instance.OnDeliveryFail += DeliveryManager_OnDeliveryFail;
+    }
+
+    private void OnEnable()
+    {
+        BaseCounter.OnObjectDrop += BaseCounter_OnObjectDrop;
+        CuttingCounter.OnAnyCut += CuttingCounter_OnAnyCut;
         TrashCounter.OnAnyObjectTrashed += TrashCounter_OnAnyObjectTrashed;
+    }
+
+    private void OnDisable()
+    {
+        BaseCounter.OnObjectDrop -= BaseCounter_OnObjectDrop;
+        CuttingCounter.OnAnyCut -= CuttingCounter_OnAnyCut;
+        TrashCounter.OnAnyObjectTrashed -= TrashCounter_OnAnyObjectTrashed;
     }
 
     private void Player_OnObjectPickup(object sender, System.EventArgs e)

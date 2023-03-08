@@ -33,11 +33,20 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    private bool isGamePaused = false;
+    public event EventHandler OnGamePaused;
+    public event EventHandler OnGameUnpaused;
+
     private void Awake()
     {
         Assert.IsNull(Instance, "Multiple instances of GameManager");
         Instance = this;
         gamePlayingTimer = gamePlayingTimerMax;
+    }
+
+    private void Start()
+    {
+        GameInput.Instance.OnPauseAction += GameInput_OnPauseAction;
     }
 
     private void Update()
@@ -69,6 +78,26 @@ public class GameManager : MonoBehaviour
                 break;
             default:
                 break;
+        }
+    }
+
+    private void GameInput_OnPauseAction(object sender, EventArgs e)
+    {
+        TogglePause();
+    }
+
+    public void TogglePause()
+    {
+        isGamePaused = !isGamePaused;
+        if (isGamePaused)
+        {
+            Time.timeScale = 0f;
+            OnGamePaused?.Invoke(this, EventArgs.Empty);
+        }
+        else
+        {
+            Time.timeScale = 1f;
+            OnGameUnpaused?.Invoke(this, EventArgs.Empty);
         }
     }
 
