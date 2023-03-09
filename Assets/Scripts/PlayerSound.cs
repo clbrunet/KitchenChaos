@@ -25,6 +25,6 @@ public class PlayerSound : MonoBehaviour
         {
             return;
         }
-        SoundManager.Instance.PlayClips(footstepClips, transform.position);
+        SoundManager.Instance.PlaySound(footstepClips, transform.position);
     }
 }

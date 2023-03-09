@@ -78,43 +78,48 @@ public class SoundManager : MonoBehaviour
 
     private void Player_OnObjectPickup(object sender, System.EventArgs e)
     {
-        PlayClips(audioClipsSO.objectPickup, Player.Instance.transform.position);
+        PlaySound(audioClipsSO.objectPickup, Player.Instance.transform.position);
     }
 
     private void BaseCounter_OnObjectDrop(object sender, System.EventArgs e)
     {
         MonoBehaviour monoBehaviour = sender as MonoBehaviour;
-        PlayClips(audioClipsSO.objectDrop, monoBehaviour.transform.position);
+        PlaySound(audioClipsSO.objectDrop, monoBehaviour.transform.position);
     }
 
     private void CuttingCounter_OnAnyCut(object sender, System.EventArgs e)
     {
         MonoBehaviour monoBehaviour = sender as MonoBehaviour;
-        PlayClips(audioClipsSO.chop, monoBehaviour.transform.position);
+        PlaySound(audioClipsSO.chop, monoBehaviour.transform.position);
     }
 
     private void DeliveryManager_OnDeliverySuccess(object sender, System.EventArgs e)
     {
-        PlayClips(audioClipsSO.deliverySuccess, DeliveryCounter.Instance.transform.position);
+        PlaySound(audioClipsSO.deliverySuccess, DeliveryCounter.Instance.transform.position);
     }
 
     private void DeliveryManager_OnDeliveryFail(object sender, System.EventArgs e)
     {
-        PlayClips(audioClipsSO.deliveryFail, DeliveryCounter.Instance.transform.position);
+        PlaySound(audioClipsSO.deliveryFail, DeliveryCounter.Instance.transform.position);
     }
 
     private void TrashCounter_OnAnyObjectTrashed(object sender, System.EventArgs e)
     {
         MonoBehaviour monoBehaviour = sender as MonoBehaviour;
-        PlayClips(audioClipsSO.trash, monoBehaviour.transform.position);
+        PlaySound(audioClipsSO.trash, monoBehaviour.transform.position);
     }
 
-    public void PlayClips(AudioClip[] clips, Vector3 position, float volumeMultiplier = 1f)
+    public void PlayWarning(Vector3 position, float volumeMultiplier = 1f)
     {
-        PlayClip(clips[UnityEngine.Random.Range(0, clips.Length)], position, volumeMultiplier);
+        PlaySound(audioClipsSO.warning, position, volumeMultiplier);
     }
 
-    public void PlayClip(AudioClip clip, Vector3 position, float volumeMultiplier = 1f)
+    public void PlaySound(AudioClip[] clips, Vector3 position, float volumeMultiplier = 1f)
+    {
+        PlaySound(clips[UnityEngine.Random.Range(0, clips.Length)], position, volumeMultiplier);
+    }
+
+    public void PlaySound(AudioClip clip, Vector3 position, float volumeMultiplier = 1f)
     {
         AudioSource.PlayClipAtPoint(clip, position, volume * volumeMultiplier);
     }

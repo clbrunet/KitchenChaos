@@ -10,4 +10,5 @@ public class AudioClipsSO : ScriptableObject
     public AudioClip[] deliverySuccess;
     public AudioClip[] deliveryFail;
     public AudioClip[] trash;
+    public AudioClip[] warning;
 }
