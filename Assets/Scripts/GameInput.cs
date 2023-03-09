@@ -30,6 +30,8 @@ public class GameInput : MonoBehaviour
     public event EventHandler OnInteractAlternateAction;
     public event EventHandler OnPauseAction;
 
+    public event EventHandler OnBindingRebound;
+
     private void Awake()
     {
         Assert.IsNull(Instance, "Multiple instances of GameInput");
@@ -92,7 +94,7 @@ public class GameInput : MonoBehaviour
         return inputBinding.ToDisplayString();
     }
 
-    public void RebindBinding(Binding binding, Action onActionRebound)
+    public void RebindBinding(Binding binding)
     {
         playerInputActions.Player.Disable();
         InputAction inputAction;
@@ -138,7 +140,7 @@ public class GameInput : MonoBehaviour
         {
             callback.Dispose();
             playerInputActions.Player.Enable();
-            onActionRebound?.Invoke();
+            OnBindingRebound?.Invoke(this, EventArgs.Empty);
             PlayerPrefs.SetString(PLAYER_PREFS_INPUT_BINDINGS, playerInputActions.SaveBindingOverridesAsJson());
             PlayerPrefs.Save();
         }).Start();

@@ -92,6 +92,7 @@ public class OptionsUI : MonoBehaviour
     private void Start()
     {
         GameManager.Instance.OnGameUnpaused += GameManager_OnGameUnpaused;
+        GameInput.Instance.OnBindingRebound += GameInput_OnBindingRebound;
         UpdateVisual();
         gameObject.SetActive(false);
     }
@@ -129,10 +130,12 @@ public class OptionsUI : MonoBehaviour
     private void RebindBinding(GameInput.Binding binding)
     {
         rebind.SetActive(true);
-        GameInput.Instance.RebindBinding(binding, () =>
-        {
-            UpdateVisual();
-            rebind.SetActive(false);
-        });
+        GameInput.Instance.RebindBinding(binding);
+    }
+
+    private void GameInput_OnBindingRebound(object sender, EventArgs e)
+    {
+        UpdateVisual();
+        rebind.SetActive(false);
     }
 }
