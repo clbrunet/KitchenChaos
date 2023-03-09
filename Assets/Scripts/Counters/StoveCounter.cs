@@ -14,6 +14,8 @@ public class StoveCounter : BaseCounter, IHasProgression
     public event EventHandler OnTurningOn;
     public event EventHandler OnTurningOff;
 
+    public event EventHandler OnBurningStarted;
+
     public override void Interact(Player player)
     {
         if (HasKitchenObject())
@@ -75,6 +77,7 @@ public class StoveCounter : BaseCounter, IHasProgression
         }
         kitchenObject.DestroySelf();
         Instantiate(recipe.cooked.prefab).SetParent(this);
+        OnBurningStarted?.Invoke(this, EventArgs.Empty);
         elapsed = 0f;
         while (elapsed < recipe.cookTime)
         {
