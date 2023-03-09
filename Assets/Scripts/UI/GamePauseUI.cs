@@ -17,7 +17,12 @@ public class GamePauseUI : MonoBehaviour
         });
         optionsButton.onClick.AddListener(() =>
         {
-            OptionsUI.Instance.gameObject.SetActive(true);
+            OptionsUI.Instance.Open(() =>
+            {
+                gameObject.SetActive(true);
+                optionsButton.Select();
+            });
+            gameObject.SetActive(false);
         });
         mainMenuButton.onClick.AddListener(() =>
         {
@@ -35,6 +40,7 @@ public class GamePauseUI : MonoBehaviour
     private void GameManager_OnGamePaused(object sender, System.EventArgs e)
     {
         gameObject.SetActive(true);
+        resumeButton.Select();
     }
 
     private void GameManager_OnGameUnpaused(object sender, System.EventArgs e)

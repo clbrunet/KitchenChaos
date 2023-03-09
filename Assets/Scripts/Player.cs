@@ -96,7 +96,7 @@ public class Player : MonoBehaviour, IKitchenObjectParent
 
     private void GameInput_OnInteractAction(object sender, System.EventArgs e)
     {
-        if (!GameManager.Instance.IsPlaying())
+        if (!GameManager.Instance.IsPlaying() || Time.timeScale == 0f)
         {
             return;
         }
@@ -108,7 +108,7 @@ public class Player : MonoBehaviour, IKitchenObjectParent
 
     private void GameInput_OnInteractAlternateAction(object sender, System.EventArgs e)
     {
-        if (!GameManager.Instance.IsPlaying())
+        if (!GameManager.Instance.IsPlaying() || Time.timeScale == 0f)
         {
             return;
         }

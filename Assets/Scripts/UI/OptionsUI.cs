@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -24,10 +25,16 @@ public class OptionsUI : MonoBehaviour
     [SerializeField] private TextMeshProUGUI moveRightButtonText;
     [SerializeField] private Button interactButton;
     [SerializeField] private TextMeshProUGUI interactButtonText;
+    [SerializeField] private Button gamepadInteractButton;
+    [SerializeField] private TextMeshProUGUI gamepadInteractButtonText;
     [SerializeField] private Button interactAltButton;
     [SerializeField] private TextMeshProUGUI interactAltButtonText;
+    [SerializeField] private Button gamepadInteractAltButton;
+    [SerializeField] private TextMeshProUGUI gamepadInteractAltButtonText;
     [SerializeField] private Button closeButton;
     [SerializeField] private GameObject rebind;
+
+    private Action onClose;
 
     private void Awake()
     {
@@ -46,6 +53,7 @@ public class OptionsUI : MonoBehaviour
         closeButton.onClick.AddListener(() =>
         {
             gameObject.SetActive(false);
+            onClose?.Invoke();
         });
         moveUpButton.onClick.AddListener(() =>
         {
@@ -67,9 +75,17 @@ public class OptionsUI : MonoBehaviour
         {
             RebindBinding(GameInput.Binding.Interact);
         });
+        gamepadInteractButton.onClick.AddListener(() =>
+        {
+            RebindBinding(GameInput.Binding.Gamepad_Interact);
+        });
         interactAltButton.onClick.AddListener(() =>
         {
             RebindBinding(GameInput.Binding.InteractAlternate);
+        });
+        gamepadInteractAltButton.onClick.AddListener(() =>
+        {
+            RebindBinding(GameInput.Binding.Gamepad_InteractAlternate);
         });
     }
 
@@ -78,6 +94,13 @@ public class OptionsUI : MonoBehaviour
         GameManager.Instance.OnGameUnpaused += GameManager_OnGameUnpaused;
         UpdateVisual();
         gameObject.SetActive(false);
+    }
+
+    public void Open(Action onClose)
+    {
+        this.onClose = onClose;
+        gameObject.SetActive(true);
+        soundEffectsVolumeButton.Select();
     }
 
     private void GameManager_OnGameUnpaused(object sender, System.EventArgs e)
@@ -94,7 +117,9 @@ public class OptionsUI : MonoBehaviour
         moveLeftButtonText.text = GameInput.Instance.GetBindingText(GameInput.Binding.MoveLeft);
         moveRightButtonText.text = GameInput.Instance.GetBindingText(GameInput.Binding.MoveRight);
         interactButtonText.text = GameInput.Instance.GetBindingText(GameInput.Binding.Interact);
+        gamepadInteractButtonText.text = GameInput.Instance.GetBindingText(GameInput.Binding.Gamepad_Interact);
         interactAltButtonText.text = GameInput.Instance.GetBindingText(GameInput.Binding.InteractAlternate);
+        gamepadInteractAltButtonText.text = GameInput.Instance.GetBindingText(GameInput.Binding.Gamepad_InteractAlternate);
     }
 
     private void RebindBinding(GameInput.Binding binding)

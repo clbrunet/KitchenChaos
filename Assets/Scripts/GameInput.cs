@@ -20,6 +20,8 @@ public class GameInput : MonoBehaviour
         Interact,
         InteractAlternate,
         Pause,
+        Gamepad_Interact,
+        Gamepad_InteractAlternate,
     }
 
     private PlayerInputActions playerInputActions;
@@ -83,6 +85,8 @@ public class GameInput : MonoBehaviour
             Binding.Interact => playerInputActions.Player.Interact.bindings[0],
             Binding.InteractAlternate => playerInputActions.Player.InteractAlternate.bindings[0],
             Binding.Pause => playerInputActions.Player.Pause.bindings[0],
+            Binding.Gamepad_Interact => playerInputActions.Player.Interact.bindings[2],
+            Binding.Gamepad_InteractAlternate => playerInputActions.Player.InteractAlternate.bindings[2],
             _ => new InputBinding(),
         };
         return inputBinding.ToDisplayString();
@@ -118,6 +122,14 @@ public class GameInput : MonoBehaviour
             case Binding.InteractAlternate:
                 inputAction = playerInputActions.Player.InteractAlternate;
                 bindingIndex = 0;
+                break;
+            case Binding.Gamepad_Interact:
+                inputAction = playerInputActions.Player.Interact;
+                bindingIndex = 2;
+                break;
+            case Binding.Gamepad_InteractAlternate:
+                inputAction = playerInputActions.Player.InteractAlternate;
+                bindingIndex = 2;
                 break;
             default:
                 return;
