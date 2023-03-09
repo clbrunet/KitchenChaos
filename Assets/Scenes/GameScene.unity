@@ -12179,6 +12179,54 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1892345677}
     m_Modifications:
+    - target: {fileID: 7841003094843532, guid: 26c48f439fc263744a54752b184052cc, type: 3}
+      propertyPath: failColor.a
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7841003094843532, guid: 26c48f439fc263744a54752b184052cc, type: 3}
+      propertyPath: failColor.b
+      value: 0.19188325
+      objectReference: {fileID: 0}
+    - target: {fileID: 7841003094843532, guid: 26c48f439fc263744a54752b184052cc, type: 3}
+      propertyPath: failColor.g
+      value: 0.19188325
+      objectReference: {fileID: 0}
+    - target: {fileID: 7841003094843532, guid: 26c48f439fc263744a54752b184052cc, type: 3}
+      propertyPath: failColor.r
+      value: 0.8301887
+      objectReference: {fileID: 0}
+    - target: {fileID: 7841003094843532, guid: 26c48f439fc263744a54752b184052cc, type: 3}
+      propertyPath: successColor.a
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7841003094843532, guid: 26c48f439fc263744a54752b184052cc, type: 3}
+      propertyPath: successColor.b
+      value: 0.25490198
+      objectReference: {fileID: 0}
+    - target: {fileID: 7841003094843532, guid: 26c48f439fc263744a54752b184052cc, type: 3}
+      propertyPath: successColor.g
+      value: 0.8117647
+      objectReference: {fileID: 0}
+    - target: {fileID: 2065707993370946173, guid: 26c48f439fc263744a54752b184052cc,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2065707993370946173, guid: 26c48f439fc263744a54752b184052cc,
+        type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2342201568597130528, guid: 26c48f439fc263744a54752b184052cc,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 2342201568597130528, guid: 26c48f439fc263744a54752b184052cc,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0.75
+      objectReference: {fileID: 0}
     - target: {fileID: 3567773607466596486, guid: 26c48f439fc263744a54752b184052cc,
         type: 3}
       propertyPath: m_RootOrder
