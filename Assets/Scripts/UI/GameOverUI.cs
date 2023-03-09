@@ -23,6 +23,11 @@ public class GameOverUI : MonoBehaviour
         gameObject.SetActive(false);
     }
 
+    private void OnEnable()
+    {
+        mainMenuButton.Select();
+    }
+
     private void GameManager_OnStateChanged(object sender, GameManager.OnStateChangedEventArgs e)
     {
         if (e.state == GameManager.State.GameOver)

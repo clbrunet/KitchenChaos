@@ -8,6 +8,7 @@ public class GamePauseUI : MonoBehaviour
     [SerializeField] private Button resumeButton;
     [SerializeField] private Button optionsButton;
     [SerializeField] private Button mainMenuButton;
+    [SerializeField] private GameObject gameOverUI;
 
     private void Awake()
     {
@@ -39,6 +40,10 @@ public class GamePauseUI : MonoBehaviour
 
     private void GameManager_OnGamePaused(object sender, System.EventArgs e)
     {
+        if (GameManager.Instance.IsOver())
+        {
+            gameOverUI.SetActive(false);
+        }
         gameObject.SetActive(true);
         resumeButton.Select();
     }
@@ -46,5 +51,9 @@ public class GamePauseUI : MonoBehaviour
     private void GameManager_OnGameUnpaused(object sender, System.EventArgs e)
     {
         gameObject.SetActive(false);
+        if (GameManager.Instance.IsOver())
+        {
+            gameOverUI.SetActive(true);
+        }
     }
 }

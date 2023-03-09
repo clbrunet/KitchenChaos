@@ -112,6 +112,11 @@ public class GameManager : MonoBehaviour
         return state == State.GamePlaying;
     }
 
+    public bool IsOver()
+    {
+        return state == State.GameOver;
+    }
+
     public float GetCountdownToStartTimer()
     {
         return countdownToStartTimer;

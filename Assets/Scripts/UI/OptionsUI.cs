@@ -96,11 +96,15 @@ public class OptionsUI : MonoBehaviour
         gameObject.SetActive(false);
     }
 
+    private void OnEnable()
+    {
+        soundEffectsVolumeButton.Select();
+    }
+
     public void Open(Action onClose)
     {
         this.onClose = onClose;
         gameObject.SetActive(true);
-        soundEffectsVolumeButton.Select();
     }
 
     private void GameManager_OnGameUnpaused(object sender, System.EventArgs e)
