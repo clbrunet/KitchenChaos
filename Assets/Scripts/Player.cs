@@ -1,14 +1,13 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.Assertions;
 
-public class Player : MonoBehaviour, IKitchenObjectParent
+public class Player : NetworkBehaviour, IKitchenObjectParent
 {
-    public static Player Instance { get; private set; }
-
-    [SerializeField] private GameInput gameInput;
+    //public static Player Instance { get; private set; }
 
     [SerializeField] private float moveSpeed = 7f;
 
@@ -30,20 +29,14 @@ public class Player : MonoBehaviour, IKitchenObjectParent
 
     private void Awake()
     {
-        Assert.IsNull(Instance, "Multiple instances of Player");
-        Instance = this;
+        //Assert.IsNull(Instance, "Multiple instances of Player");
+        //Instance = this;
     }
 
-    private void OnEnable()
+    private void Start()
     {
-        gameInput.OnInteractAction += GameInput_OnInteractAction;
-        gameInput.OnInteractAlternateAction += GameInput_OnInteractAlternateAction;
-    }
-
-    private void OnDisable()
-    {
-        gameInput.OnInteractAction -= GameInput_OnInteractAction;
-        gameInput.OnInteractAlternateAction -= GameInput_OnInteractAlternateAction;
+        GameInput.Instance.OnInteractAction += GameInput_OnInteractAction;
+        GameInput.Instance.OnInteractAlternateAction += GameInput_OnInteractAlternateAction;
     }
 
     private void Update()
@@ -58,7 +51,7 @@ public class Player : MonoBehaviour, IKitchenObjectParent
 
     private void HandleMovements()
     {
-        Vector2 inputVector = gameInput.GetNormalizedInputVector();
+        Vector2 inputVector = GameInput.Instance.GetNormalizedInputVector();
         isWalking = inputVector != Vector2.zero;
         if (!isWalking)
         {
