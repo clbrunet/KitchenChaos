@@ -7,7 +7,8 @@ using UnityEngine.Assertions;
 
 public class Player : NetworkBehaviour, IKitchenObjectParent
 {
-    //public static Player Instance { get; private set; }
+    public static Player LocalInstance { get; private set; }
+    public static event EventHandler OnPlayerLocalInstanceSet;
 
     [SerializeField] private float moveSpeed = 7f;
 
@@ -26,17 +27,23 @@ public class Player : NetworkBehaviour, IKitchenObjectParent
     private KitchenObject kitchenObject;
 
     public event EventHandler OnObjectPickup;
-
-    private void Awake()
-    {
-        //Assert.IsNull(Instance, "Multiple instances of Player");
-        //Instance = this;
-    }
+    public static event EventHandler OnAnyObjectPickup;
 
     private void Start()
     {
         GameInput.Instance.OnInteractAction += GameInput_OnInteractAction;
         GameInput.Instance.OnInteractAlternateAction += GameInput_OnInteractAlternateAction;
+    }
+
+    public override void OnNetworkSpawn()
+    {
+        if (!IsOwner)
+        {
+            return;
+        }
+        Assert.IsNull(LocalInstance, "Multiple local instances of Player");
+        LocalInstance = this;
+        OnPlayerLocalInstanceSet?.Invoke(this, EventArgs.Empty);
     }
 
     private void Update()
@@ -146,6 +153,7 @@ public class Player : NetworkBehaviour, IKitchenObjectParent
         if (kitchenObject != null)
         {
             OnObjectPickup?.Invoke(this, EventArgs.Empty);
+            OnAnyObjectPickup?.Invoke(this, EventArgs.Empty);
         }
     }
 

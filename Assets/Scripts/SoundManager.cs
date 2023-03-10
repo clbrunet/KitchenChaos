@@ -33,13 +33,13 @@ public class SoundManager : MonoBehaviour
 
     private void Start()
     {
-        //Player.Instance.OnObjectPickup += Player_OnObjectPickup;
         DeliveryManager.Instance.OnDeliverySuccess += DeliveryManager_OnDeliverySuccess;
         DeliveryManager.Instance.OnDeliveryFail += DeliveryManager_OnDeliveryFail;
     }
 
     private void OnEnable()
     {
+        Player.OnAnyObjectPickup += Player_OnAnyObjectPickup;
         BaseCounter.OnObjectDrop += BaseCounter_OnObjectDrop;
         CuttingCounter.OnAnyCut += CuttingCounter_OnAnyCut;
         TrashCounter.OnAnyObjectTrashed += TrashCounter_OnAnyObjectTrashed;
@@ -47,6 +47,7 @@ public class SoundManager : MonoBehaviour
 
     private void OnDisable()
     {
+        Player.OnAnyObjectPickup -= Player_OnAnyObjectPickup;
         BaseCounter.OnObjectDrop -= BaseCounter_OnObjectDrop;
         CuttingCounter.OnAnyCut -= CuttingCounter_OnAnyCut;
         TrashCounter.OnAnyObjectTrashed -= TrashCounter_OnAnyObjectTrashed;
@@ -76,9 +77,10 @@ public class SoundManager : MonoBehaviour
         PlayerPrefs.Save();
     }
 
-    private void Player_OnObjectPickup(object sender, System.EventArgs e)
+    private void Player_OnAnyObjectPickup(object sender, System.EventArgs e)
     {
-        //PlaySound(audioClipsSO.objectPickup, Player.Instance.transform.position);
+        MonoBehaviour monoBehaviour = sender as MonoBehaviour;
+        PlaySound(audioClipsSO.objectPickup, monoBehaviour.transform.position);
     }
 
     private void BaseCounter_OnObjectDrop(object sender, System.EventArgs e)

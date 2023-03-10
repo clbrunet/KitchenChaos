@@ -7,9 +7,19 @@ public class SelectedCounterVisual : MonoBehaviour
     [SerializeField] private BaseCounter baseCounter;
     [SerializeField] private GameObject[] selectedMeshes;
 
-    private void Start()
+    private void OnEnable()
     {
-        //Player.Instance.OnSelectedCounterChanged += Player_OnSelectedCounterChanged;
+        Player.OnPlayerLocalInstanceSet += Player_OnPlayerLocalInstanceSet;
+    }
+
+    private void OnDisable()
+    {
+        Player.OnPlayerLocalInstanceSet -= Player_OnPlayerLocalInstanceSet;
+    }
+
+    private void Player_OnPlayerLocalInstanceSet(object sender, System.EventArgs e)
+    {
+        Player.LocalInstance.OnSelectedCounterChanged += Player_OnSelectedCounterChanged;
     }
 
     private void Player_OnSelectedCounterChanged(object sender, Player.OnSelectedCounterChangedEventArgs e)
