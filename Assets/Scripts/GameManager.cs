@@ -18,7 +18,7 @@ public class GameManager : MonoBehaviour
     private State state = State.WaitingToStart;
 
     private float countdownToStartTimer = 3f;
-    [SerializeField] private float gamePlayingTimerMax = 10f;
+    [SerializeField] private float gamePlayingTimerMax = 90f;
     private float gamePlayingTimer;
 
     public event EventHandler<OnStateChangedEventArgs> OnStateChanged;

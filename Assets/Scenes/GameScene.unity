@@ -10042,7 +10042,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: df70cfad9b327194f8f23e20293c9b92, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gamePlayingTimerMax: 30
+  gamePlayingTimerMax: 90
 --- !u!4 &1315233678
 Transform:
   m_ObjectHideFlags: 0
@@ -14384,6 +14384,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1877329903}
   - component: {fileID: 1877329902}
+  - component: {fileID: 1877329904}
   m_Layer: 0
   m_Name: DeliveryManager
   m_TagString: Untagged
@@ -14419,6 +14420,22 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1877329904
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1877329901}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  GlobalObjectIdHash: 3985329651
+  AlwaysReplicateAsRoot: 0
+  DontDestroyWithOwner: 0
+  AutoObjectParentSync: 1
 --- !u!1 &1892345676
 GameObject:
   m_ObjectHideFlags: 0
