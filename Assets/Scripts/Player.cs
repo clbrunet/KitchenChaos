@@ -41,7 +41,7 @@ public class Player : NetworkBehaviour, IKitchenObjectParent
 
     private void Update()
     {
-        if (!GameManager.Instance.IsPlaying())
+        if (!IsOwner || !GameManager.Instance.IsPlaying())
         {
             return;
         }
