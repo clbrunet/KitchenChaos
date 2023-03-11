@@ -29,6 +29,8 @@ public class Player : NetworkBehaviour, IKitchenObjectParent
     public event EventHandler OnObjectPickup;
     public static event EventHandler OnAnyObjectPickup;
 
+    [SerializeField] private Vector3[] spawnPositions;
+
     private void Start()
     {
         GameInput.Instance.OnInteractAction += GameInput_OnInteractAction;
@@ -37,6 +39,7 @@ public class Player : NetworkBehaviour, IKitchenObjectParent
 
     public override void OnNetworkSpawn()
     {
+        transform.position = spawnPositions[OwnerClientId];
         if (!IsOwner)
         {
             return;
@@ -73,10 +76,8 @@ public class Player : NetworkBehaviour, IKitchenObjectParent
 
     private void TryMove(Vector3 moveDirection, float moveDistance)
     {
-        const float PLAYER_HEIGHT = 2.1f;
         const float PLAYER_RADIUS = 0.65f;
-        if (!Physics.CapsuleCast(transform.position + PLAYER_RADIUS * Vector3.up,
-            transform.position + (PLAYER_HEIGHT - PLAYER_RADIUS) * Vector3.up, PLAYER_RADIUS, moveDirection, moveDistance))
+        if (!Physics.BoxCast(transform.position + PLAYER_RADIUS * Vector3.up, PLAYER_RADIUS * Vector3.one, moveDirection, Quaternion.identity, moveDistance))
         {
             transform.position += moveDistance * moveDirection;
         }
