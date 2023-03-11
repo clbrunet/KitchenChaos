@@ -1,13 +1,14 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Netcode;
 using UnityEngine;
 
 public class StoveCounter : BaseCounter, IHasProgression
 {
     [SerializeField] private StoveRecipeSO[] stoveRecipeSOs;
 
-    private Coroutine cookCoroutine;
+    private Coroutine serverCookCoroutine;
 
     public event EventHandler<IHasProgression.OnProgressionEventArgs> OnProgression;
 
@@ -15,6 +16,17 @@ public class StoveCounter : BaseCounter, IHasProgression
     public event EventHandler OnTurningOff;
 
     public event EventHandler OnBurningStarted;
+
+    public NetworkVariable<float> cookingElapsedTime = new(0f);
+    public float currentRecipeCookTime = 0f;
+
+    public override void OnNetworkSpawn()
+    {
+        cookingElapsedTime.OnValueChanged += (float previousValue, float newValue) =>
+        {
+            OnProgression?.Invoke(this, new IHasProgression.OnProgressionEventArgs(cookingElapsedTime.Value / currentRecipeCookTime));
+        };
+    }
 
     public override void Interact(Player player)
     {
@@ -27,9 +39,7 @@ public class StoveCounter : BaseCounter, IHasProgression
             }
             if (TryGrabKitchenObject(player))
             {
-                StopCoroutine(cookCoroutine);
-                OnProgression?.Invoke(this, new IHasProgression.OnProgressionEventArgs(0f));
-                OnTurningOff?.Invoke(this, EventArgs.Empty);
+                StopCookingServerRpc();
                 return;
             }
         }
@@ -42,7 +52,7 @@ public class StoveCounter : BaseCounter, IHasProgression
             }
             if (TryPutKitchenObject(player))
             {
-                cookCoroutine = StartCoroutine(Cook(recipe));
+                CookServerRpc();
                 return;
             }
         }
@@ -60,38 +70,95 @@ public class StoveCounter : BaseCounter, IHasProgression
         return null;
     }
 
+    [ServerRpc(RequireOwnership = false)]
+    private void CookServerRpc()
+    {
+        StoveRecipeSO recipe = GetRecipe(kitchenObject.GetKitchenObjectSO());
+        SetCurrentRecipeCookTimeClientRpc();
+        serverCookCoroutine = StartCoroutine(Cook(recipe));
+    }
+
+    [ClientRpc]
+    private void SetCurrentRecipeCookTimeClientRpc()
+    {
+        StoveRecipeSO recipe = GetRecipe(kitchenObject.GetKitchenObjectSO());
+        currentRecipeCookTime = recipe.cookTime;
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    private void StopCookingServerRpc()
+    {
+        StopCoroutine(serverCookCoroutine);
+        cookingElapsedTime.Value = 0f;
+        TurnOffServerRpc();
+    }
+
     private IEnumerator Cook(StoveRecipeSO recipe)
     {
-        OnTurningOn?.Invoke(this, EventArgs.Empty);
-        float elapsed = 0f;
-        while (elapsed < recipe.cookTime)
+        TurnOnServerRpc();
+        cookingElapsedTime.Value = 0f;
+        while (cookingElapsedTime.Value < recipe.cookTime)
         {
             yield return null;
             if (!GameManager.Instance.IsPlaying())
             {
-                OnTurningOff?.Invoke(this, EventArgs.Empty);
+                TurnOffServerRpc();
                 yield break;
             }
-            elapsed += Time.deltaTime;
-            OnProgression?.Invoke(this, new IHasProgression.OnProgressionEventArgs(elapsed / recipe.cookTime));
+            cookingElapsedTime.Value += Time.deltaTime;
         }
         KitchenObject.Destroy(kitchenObject);
         KitchenObject.Spawn(recipe.cooked, this);
-        OnBurningStarted?.Invoke(this, EventArgs.Empty);
-        elapsed = 0f;
-        while (elapsed < recipe.cookTime)
+        StartBurningServerRpc();
+        cookingElapsedTime.Value = 0f;
+        while (cookingElapsedTime.Value < recipe.cookTime)
         {
             yield return null;
             if (!GameManager.Instance.IsPlaying())
             {
-                OnTurningOff?.Invoke(this, EventArgs.Empty);
+                TurnOffServerRpc();
                 yield break;
             }
-            elapsed += Time.deltaTime;
-            OnProgression?.Invoke(this, new IHasProgression.OnProgressionEventArgs(elapsed / recipe.cookTime));
+            cookingElapsedTime.Value += Time.deltaTime;
         }
         KitchenObject.Destroy(kitchenObject);
         KitchenObject.Spawn(recipe.burned, this);
+        TurnOffServerRpc();
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    private void TurnOnServerRpc()
+    {
+        TurnOnClientRpc();
+    }
+
+    [ClientRpc]
+    private void TurnOnClientRpc()
+    {
+        OnTurningOn?.Invoke(this, EventArgs.Empty);
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    private void StartBurningServerRpc()
+    {
+        StartBurningClientRpc();
+    }
+
+    [ClientRpc]
+    private void StartBurningClientRpc()
+    {
+        OnBurningStarted?.Invoke(this, EventArgs.Empty);
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    private void TurnOffServerRpc()
+    {
+        TurnOffClientRpc();
+    }
+
+    [ClientRpc]
+    private void TurnOffClientRpc()
+    {
         OnTurningOff?.Invoke(this, EventArgs.Empty);
     }
 }
