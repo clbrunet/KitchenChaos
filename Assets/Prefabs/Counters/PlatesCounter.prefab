@@ -95,7 +95,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4fa9977e798956f428453ebd6b5c7bc3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  platePrefab: {fileID: 5484744388252233782, guid: 9235499eeafab40498f5d812b43dbc4a,
+  plateVisualPrefab: {fileID: 3812876574508226177, guid: c0c9afd619b40914a8f625c0535e2284,
     type: 3}
   topPoint: {fileID: 8413131366167065367}
 --- !u!4 &1019919344646449311 stripped
@@ -215,7 +215,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   topPoint: {fileID: 0}
   plateSO: {fileID: 11400000, guid: 487906e0ec49b3842933f784bbffb6b1, type: 2}
-  maxPlatesCount: 5
 --- !u!4 &8413131366167065367 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 2069387700839303758, guid: abe4ddd947f99514fa127ad5acf95715,

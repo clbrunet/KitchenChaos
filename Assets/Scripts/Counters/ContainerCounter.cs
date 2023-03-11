@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Netcode;
 using UnityEngine;
 
 public class ContainerCounter : BaseCounter
@@ -13,8 +14,8 @@ public class ContainerCounter : BaseCounter
     {
         if (!player.HasKitchenObject() && !HasKitchenObject())
         {
-            Instantiate(kitchenObjectSO.prefab).SetParent(player);
-            OnObjectInstantiation?.Invoke(this, EventArgs.Empty);
+            KitchenObject.Spawn(kitchenObjectSO, player);
+            ObjectInstantiationServerRpc();
             return;
         }
         if (TryGrabKitchenObject(player))
@@ -25,5 +26,17 @@ public class ContainerCounter : BaseCounter
         {
             return;
         }
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    private void ObjectInstantiationServerRpc()
+    {
+        ObjectInstantiationClientRpc();
+    }
+
+    [ClientRpc]
+    private void ObjectInstantiationClientRpc()
+    {
+        OnObjectInstantiation?.Invoke(this, EventArgs.Empty);
     }
 }

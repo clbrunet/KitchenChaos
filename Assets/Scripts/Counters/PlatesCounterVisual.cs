@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class PlatesCounterVisual : MonoBehaviour
 {
-    [SerializeField] private GameObject platePrefab;
+    [SerializeField] private GameObject plateVisualPrefab;
 
     private PlatesCounter platesCounter;
     [SerializeField] private Transform topPoint;
@@ -30,7 +30,7 @@ public class PlatesCounterVisual : MonoBehaviour
 
     private void PlatesCounter_OnPlateSpawn(object sender, System.EventArgs e)
     {
-        GameObject plate = Instantiate(platePrefab, topPoint);
+        GameObject plate = Instantiate(plateVisualPrefab, topPoint);
         plate.transform.localPosition = new Vector3(0f, 0.1f * plates.Count, 0f);
         plates.Push(plate);
     }

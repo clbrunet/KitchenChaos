@@ -36,7 +36,7 @@ public class PlatesCounter : BaseCounter
         {
             platesCount--;
             OnPlateGrab?.Invoke(this, EventArgs.Empty);
-            Instantiate(plateSO.prefab).SetParent(player);
+            KitchenObject.Spawn(plateSO, player);
         }
     }
 }

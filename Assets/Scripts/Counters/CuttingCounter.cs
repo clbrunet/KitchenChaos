@@ -64,7 +64,7 @@ public class CuttingCounter : BaseCounter, IHasProgression
         if (cutsCount == recipe.cutsNeeded)
         {
             kitchenObject.DestroySelf();
-            Instantiate(recipe.output.prefab).SetParent(this);
+            KitchenObject.Spawn(recipe.output, this);
             cutsCount = 0;
         }
         OnProgression?.Invoke(this, new IHasProgression.OnProgressionEventArgs((float)cutsCount / (float)recipe.cutsNeeded));
