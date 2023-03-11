@@ -50,28 +50,6 @@ public class KitchenObject : NetworkBehaviour
         followTransform.SetTarget(parent.GetKitchenObjectParent());
     }
 
-    //public void DestroySelf()
-    //{
-    //    //parent.ClearKitchenObject();
-    //    //Destroy(gameObject);
-    //    print("DestroySelf: " + name);
-    //    DestroySelfServerRpc();
-    //}
-
-    //[ServerRpc(RequireOwnership = false)]
-    //private void DestroySelfServerRpc()
-    //{
-    //    print("DestroySelfServerRpc: " + name);
-    //    DestroySelfClientRpc();
-    //}
-
-    //[ClientRpc]
-    //private void DestroySelfClientRpc()
-    //{
-    //    MonoBehaviour a = parent as MonoBehaviour;
-    //    print("DestroySelfClientRpc parent: " + a.name);
-    //}
-
     public static void Spawn(KitchenObjectSO kitchenObjectSO, IKitchenObjectParent kitchenObjectParent)
     {
         KitchenObjectMultiplayer.Instance.Spawn(kitchenObjectSO, kitchenObjectParent);

@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Netcode;
 using UnityEngine;
 
 public class CuttingCounter : BaseCounter, IHasProgression
@@ -36,12 +37,7 @@ public class CuttingCounter : BaseCounter, IHasProgression
         {
             return;
         }
-        CuttingRecipeSO recipe = GetRecipe(kitchenObject.GetKitchenObjectSO());
-        if (recipe ==  null)
-        {
-            return;
-        }
-        Cut(recipe);
+        TryCutServerRpc();
     }
 
     private CuttingRecipeSO GetRecipe(KitchenObjectSO input)
@@ -56,17 +52,32 @@ public class CuttingCounter : BaseCounter, IHasProgression
         return null;
     }
 
-    private void Cut(CuttingRecipeSO recipe)
+    [ServerRpc(RequireOwnership = false)]
+    private void TryCutServerRpc()
+    {
+        CuttingRecipeSO recipe = GetRecipe(kitchenObject.GetKitchenObjectSO());
+        if (recipe ==  null)
+        {
+            return;
+        }
+        CutClientRpc(recipe.cutsNeeded);
+        if (cutsCount == 0)
+        {
+            KitchenObject.Destroy(kitchenObject);
+            KitchenObject.Spawn(recipe.output, this);
+        }
+    }
+
+    [ClientRpc]
+    private void CutClientRpc(int recipeCutsNeeded)
     {
         OnCut?.Invoke(this, EventArgs.Empty);
         OnAnyCut?.Invoke(this, EventArgs.Empty);
         cutsCount++;
-        if (cutsCount == recipe.cutsNeeded)
+        if (cutsCount == recipeCutsNeeded)
         {
-            KitchenObject.Destroy(kitchenObject);
-            KitchenObject.Spawn(recipe.output, this);
             cutsCount = 0;
         }
-        OnProgression?.Invoke(this, new IHasProgression.OnProgressionEventArgs((float)cutsCount / (float)recipe.cutsNeeded));
+        OnProgression?.Invoke(this, new IHasProgression.OnProgressionEventArgs((float)cutsCount / (float)recipeCutsNeeded));
     }
 }
