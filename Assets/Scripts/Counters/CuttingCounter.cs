@@ -63,7 +63,7 @@ public class CuttingCounter : BaseCounter, IHasProgression
         cutsCount++;
         if (cutsCount == recipe.cutsNeeded)
         {
-            kitchenObject.DestroySelf();
+            KitchenObject.Destroy(kitchenObject);
             KitchenObject.Spawn(recipe.output, this);
             cutsCount = 0;
         }

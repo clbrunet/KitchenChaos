@@ -75,7 +75,7 @@ public class StoveCounter : BaseCounter, IHasProgression
             elapsed += Time.deltaTime;
             OnProgression?.Invoke(this, new IHasProgression.OnProgressionEventArgs(elapsed / recipe.cookTime));
         }
-        kitchenObject.DestroySelf();
+        KitchenObject.Destroy(kitchenObject);
         KitchenObject.Spawn(recipe.cooked, this);
         OnBurningStarted?.Invoke(this, EventArgs.Empty);
         elapsed = 0f;
@@ -90,7 +90,7 @@ public class StoveCounter : BaseCounter, IHasProgression
             elapsed += Time.deltaTime;
             OnProgression?.Invoke(this, new IHasProgression.OnProgressionEventArgs(elapsed / recipe.cookTime));
         }
-        kitchenObject.DestroySelf();
+        KitchenObject.Destroy(kitchenObject);
         KitchenObject.Spawn(recipe.burned, this);
         OnTurningOff?.Invoke(this, EventArgs.Empty);
     }

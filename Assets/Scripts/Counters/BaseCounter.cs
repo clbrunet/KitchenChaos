@@ -68,7 +68,7 @@ public abstract class BaseCounter : NetworkBehaviour, IKitchenObjectParent
             PlateKitchenObject playerPlate = playerKitchenObject as PlateKitchenObject;
             if (playerPlate.TryAddIngredient(kitchenObject.GetKitchenObjectSO()))
             {
-                kitchenObject.DestroySelf();
+                KitchenObject.Destroy(kitchenObject);
                 return true;
             }
         }
@@ -91,7 +91,7 @@ public abstract class BaseCounter : NetworkBehaviour, IKitchenObjectParent
             PlateKitchenObject counterPlate = kitchenObject as PlateKitchenObject;
             if (counterPlate.TryAddIngredient(player.GetKitchenObject().GetKitchenObjectSO()))
             {
-                player.GetKitchenObject().DestroySelf();
+                KitchenObject.Destroy(player.GetKitchenObject());
                 return true;
             }
         }
