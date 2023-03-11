@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Netcode;
 using UnityEngine;
 
 public class PlateKitchenObject : KitchenObject
@@ -21,16 +22,26 @@ public class PlateKitchenObject : KitchenObject
 
     public bool TryAddIngredient(KitchenObjectSO ingredient)
     {
-        if (!validIngredients.Contains(ingredient))
+        if (!validIngredients.Contains(ingredient) || ingredients.Contains(ingredient))
         {
             return false;
         }
-        if (!ingredients.Add(ingredient))
-        {
-            return false;
-        }
-        OnIngredientAdded?.Invoke(this, new OnIngredientAddedEventArgs(ingredient));
+        AddIngredientServerRpc(validIngredients.IndexOf(ingredient));
         return true;
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    private void AddIngredientServerRpc(int validIngredientsIndex)
+    {
+        AddIngredientClientRpc(validIngredientsIndex);
+    }
+
+    [ClientRpc]
+    private void AddIngredientClientRpc(int validIngredientsIndex)
+    {
+        KitchenObjectSO ingredient = validIngredients[validIngredientsIndex];
+        ingredients.Add(ingredient);
+        OnIngredientAdded?.Invoke(this, new OnIngredientAddedEventArgs(ingredient));
     }
 
     public HashSet<KitchenObjectSO> GetIngredients()
