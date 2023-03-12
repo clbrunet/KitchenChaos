@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -8,6 +9,7 @@ public class WaitingForPlayersUI : MonoBehaviour
     {
         GameManager.Instance.OnIsLocalPlayerReadyChanged += GameManager_OnIsLocalPlayerReadyChanged;
         GameManager.Instance.OnStateChanged += GameManager_OnStateChanged;
+        GameManager.Instance.OnHostDisconnected += GameManager_OnHostDisconnected;
         gameObject.SetActive(false);
     }
 
@@ -24,4 +26,8 @@ public class WaitingForPlayersUI : MonoBehaviour
         }
     }
 
+    private void GameManager_OnHostDisconnected(object sender, EventArgs e)
+    {
+        gameObject.SetActive(false);
+    }
 }

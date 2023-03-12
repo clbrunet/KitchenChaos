@@ -28,6 +28,7 @@ public class GameManager : NetworkBehaviour
         }
     }
     private bool isHostDisconnected = false;
+    public event EventHandler OnHostDisconnected;
     private bool isLocalPlayerReady = false;
     public event EventHandler OnIsLocalPlayerReadyChanged;
     private readonly Dictionary<ulong, bool> serverReadyClientsDictionary = new();
@@ -55,20 +56,13 @@ public class GameManager : NetworkBehaviour
     {
         GameInput.Instance.OnPauseAction += GameInput_OnPauseAction;
         GameInput.Instance.OnInteractAction += GameInput_OnInteractAction;
+        NetworkManager.Singleton.OnClientDisconnectCallback += NetworkManager_OnClientDisconnectCallback;
     }
 
     public override void OnNetworkSpawn()
     {
         state.OnValueChanged += State_OnValueChanged;
         isGamePaused.OnValueChanged += IsGamePaused_OnValueChanged;
-        if (IsServer)
-        {
-            NetworkManager.Singleton.OnClientDisconnectCallback += NetworkManager_ServerOnClientDisconnectCallback;
-        }
-        else
-        {
-            NetworkManager.Singleton.OnClientDisconnectCallback += NetworkManager_ClientOnClientDisconnectCallback;
-        }
     }
 
     public override void OnDestroy()
@@ -76,27 +70,44 @@ public class GameManager : NetworkBehaviour
         base.OnDestroy();
         if (NetworkManager.Singleton != null)
         {
-            NetworkManager.Singleton.OnClientDisconnectCallback -= NetworkManager_ServerOnClientDisconnectCallback;
-            NetworkManager.Singleton.OnClientDisconnectCallback -= NetworkManager_ClientOnClientDisconnectCallback;
+            NetworkManager.Singleton.OnClientDisconnectCallback -= NetworkManager_OnClientDisconnectCallback;
+            NetworkManager.Singleton.ConnectionApprovalCallback -= NetworkManager_ConnectionApprovalCallback;
         }
     }
 
-    private void NetworkManager_ServerOnClientDisconnectCallback(ulong clientId)
-    {
-        serverPausedClientsDictionary[clientId] = false;
-        SetIsGamePaused();
-    }
-
-    private void NetworkManager_ClientOnClientDisconnectCallback(ulong clientId)
+    private void NetworkManager_OnClientDisconnectCallback(ulong clientId)
     {
         if (clientId != NetworkManager.ServerClientId)
         {
+            serverPausedClientsDictionary[clientId] = false;
+            SetIsGamePaused();
             return;
         }
         isHostDisconnected = true;
+        OnHostDisconnected?.Invoke(this, EventArgs.Empty);
+        GameInput.Instance.OnInteractAction -= GameInput_OnInteractAction;
         IsGamePaused_OnValueChanged(isGamePaused.Value, false);
     }
 
+    public void StartHost()
+    {
+        NetworkManager.Singleton.ConnectionApprovalCallback += NetworkManager_ConnectionApprovalCallback;
+        NetworkManager.Singleton.StartHost();
+    }
+
+    private void NetworkManager_ConnectionApprovalCallback(NetworkManager.ConnectionApprovalRequest connectionApprovalRequest, NetworkManager.ConnectionApprovalResponse connectionApprovalResponse)
+    {
+        connectionApprovalResponse.Approved = state.Value == State.WaitingToStart;
+        if (connectionApprovalResponse.Approved)
+        {
+            connectionApprovalResponse.CreatePlayerObject = true;
+        }
+    }
+
+    public void StartClient()
+    {
+        NetworkManager.Singleton.StartClient();
+    }
 
     private void GameInput_OnInteractAction(object sender, EventArgs e)
     {
@@ -104,6 +115,7 @@ public class GameManager : NetworkBehaviour
         {
             SetIsLocalPlayerReady(true);
         }
+        GameInput.Instance.OnInteractAction -= GameInput_OnInteractAction;
     }
 
     private void Update()
