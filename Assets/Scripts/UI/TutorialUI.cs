@@ -17,14 +17,14 @@ public class TutorialUI : MonoBehaviour
 
     private void Start()
     {
-        GameManager.Instance.OnStateChanged += GameManager_OnStateChanged;
+        GameManager.Instance.OnIsLocalPlayerReadyChanged += GameManager_OnIsLocalPlayerReadyChanged;
         GameInput.Instance.OnBindingRebound += GameInput_OnBindingRebound;
         UpdateVisual();
     }
 
-    private void GameManager_OnStateChanged(object sender, GameManager.OnStateChangedEventArgs e)
+    private void GameManager_OnIsLocalPlayerReadyChanged(object sender, EventArgs e)
     {
-        if (e.state == GameManager.State.CountdownToStart)
+        if (GameManager.Instance.IsLocalPlayerReady())
         {
             gameObject.SetActive(false);
         }
