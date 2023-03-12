@@ -144,6 +144,10 @@ public class GameManager : NetworkBehaviour
 
     private void State_OnValueChanged(State previousValue, State newValue)
     {
+        if (IsServer && previousValue == State.WaitingToStart)
+        {
+            SetIsGamePaused();
+        }
         OnStateChanged?.Invoke(this, new OnStateChangedEventArgs(newValue));
     }
 
@@ -197,6 +201,11 @@ public class GameManager : NetworkBehaviour
 
     private void SetIsGamePaused()
     {
+        if (state.Value == State.WaitingToStart || state.Value == State.GameOver)
+        {
+            isGamePaused.Value = false;
+            return;
+        }
         foreach (ulong clientId in NetworkManager.Singleton.ConnectedClientsIds)
         {
             if (serverPausedClientsDictionary.ContainsKey(clientId)
