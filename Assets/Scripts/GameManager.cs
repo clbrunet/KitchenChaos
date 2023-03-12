@@ -27,6 +27,7 @@ public class GameManager : NetworkBehaviour
             this.state = state;
         }
     }
+    private bool isHostDisconnected = false;
     private bool isLocalPlayerReady = false;
     public event EventHandler OnIsLocalPlayerReadyChanged;
     private readonly Dictionary<ulong, bool> serverReadyClientsDictionary = new();
@@ -39,7 +40,7 @@ public class GameManager : NetworkBehaviour
     private bool isLocalPlayerPaused = false;
     public event EventHandler OnLocalPlayerPaused;
     public event EventHandler OnLocalPlayerUnpaused;
-    private NetworkVariable<bool> isGamePaused = new(false);
+    private readonly NetworkVariable<bool> isGamePaused = new(false);
     public event EventHandler OnGamePaused;
     public event EventHandler OnGameUnpaused;
 
@@ -60,7 +61,42 @@ public class GameManager : NetworkBehaviour
     {
         state.OnValueChanged += State_OnValueChanged;
         isGamePaused.OnValueChanged += IsGamePaused_OnValueChanged;
+        if (IsServer)
+        {
+            NetworkManager.Singleton.OnClientDisconnectCallback += NetworkManager_ServerOnClientDisconnectCallback;
+        }
+        else
+        {
+            NetworkManager.Singleton.OnClientDisconnectCallback += NetworkManager_ClientOnClientDisconnectCallback;
+        }
     }
+
+    public override void OnDestroy()
+    {
+        base.OnDestroy();
+        if (NetworkManager.Singleton != null)
+        {
+            NetworkManager.Singleton.OnClientDisconnectCallback -= NetworkManager_ServerOnClientDisconnectCallback;
+            NetworkManager.Singleton.OnClientDisconnectCallback -= NetworkManager_ClientOnClientDisconnectCallback;
+        }
+    }
+
+    private void NetworkManager_ServerOnClientDisconnectCallback(ulong clientId)
+    {
+        serverPausedClientsDictionary[clientId] = false;
+        SetIsGamePaused();
+    }
+
+    private void NetworkManager_ClientOnClientDisconnectCallback(ulong clientId)
+    {
+        if (clientId != NetworkManager.ServerClientId)
+        {
+            return;
+        }
+        isHostDisconnected = true;
+        IsGamePaused_OnValueChanged(isGamePaused.Value, false);
+    }
+
 
     private void GameInput_OnInteractAction(object sender, EventArgs e)
     {
@@ -122,10 +158,6 @@ public class GameManager : NetworkBehaviour
     private void SetPlayerReadyServerRpc(bool isPlayerReady, ServerRpcParams serverRpcParams = default)
     {
         serverReadyClientsDictionary[serverRpcParams.Receive.SenderClientId] = isPlayerReady;
-        if (serverReadyClientsDictionary.Count != NetworkManager.Singleton.ConnectedClientsIds.Count)
-        {
-            return;
-        }
         foreach (ulong clientId in NetworkManager.Singleton.ConnectedClientsIds)
         {
             if (!serverReadyClientsDictionary.ContainsKey(clientId)
@@ -160,6 +192,11 @@ public class GameManager : NetworkBehaviour
     private void TogglePauseServerRpc(bool isPaused, ServerRpcParams serverRpcParams = default)
     {
         serverPausedClientsDictionary[serverRpcParams.Receive.SenderClientId] = isPaused;
+        SetIsGamePaused();
+    }
+
+    private void SetIsGamePaused()
+    {
         foreach (ulong clientId in NetworkManager.Singleton.ConnectedClientsIds)
         {
             if (serverPausedClientsDictionary.ContainsKey(clientId)
@@ -184,6 +221,11 @@ public class GameManager : NetworkBehaviour
             Time.timeScale = 1f;
             OnGameUnpaused?.Invoke(this, EventArgs.Empty);
         }
+    }
+
+    public bool IsHostDisconnected()
+    {
+        return isHostDisconnected;
     }
 
     public bool IsLocalPlayerReady()

@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -8,6 +9,7 @@ public class GamePauseUI : MonoBehaviour
     [SerializeField] private Button resumeButton;
     [SerializeField] private Button optionsButton;
     [SerializeField] private Button mainMenuButton;
+    [SerializeField] private GameObject hostDisconnectedUI;
     [SerializeField] private GameObject gameOverUI;
 
     private void Awake()
@@ -27,6 +29,7 @@ public class GamePauseUI : MonoBehaviour
         });
         mainMenuButton.onClick.AddListener(() =>
         {
+            NetworkManager.Singleton.Shutdown();
             Loader.Load(Loader.Scene.MainMenuScene);
         });
     }
@@ -40,6 +43,10 @@ public class GamePauseUI : MonoBehaviour
 
     private void GameManager_OnLocalPlayerPaused(object sender, System.EventArgs e)
     {
+        if (GameManager.Instance.IsHostDisconnected())
+        {
+            hostDisconnectedUI.SetActive(false);
+        }
         if (GameManager.Instance.IsOver())
         {
             gameOverUI.SetActive(false);
@@ -51,6 +58,10 @@ public class GamePauseUI : MonoBehaviour
     private void GameManager_OnLocalPlayerUnpaused(object sender, System.EventArgs e)
     {
         gameObject.SetActive(false);
+        if (GameManager.Instance.IsHostDisconnected())
+        {
+            hostDisconnectedUI.SetActive(true);
+        }
         if (GameManager.Instance.IsOver())
         {
             gameOverUI.SetActive(true);

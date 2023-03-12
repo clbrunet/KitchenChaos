@@ -39,7 +39,10 @@ public class Player : NetworkBehaviour, IKitchenObjectParent
 
     public override void OnNetworkSpawn()
     {
-        transform.position = spawnPositions[OwnerClientId];
+        if (IsServer)
+        {
+            NetworkManager.Singleton.OnClientDisconnectCallback += NetworkManager_OnClientDisconnectCallback;
+        }
         if (!IsOwner)
         {
             return;
@@ -47,6 +50,24 @@ public class Player : NetworkBehaviour, IKitchenObjectParent
         Assert.IsNull(LocalInstance, "Multiple local instances of Player");
         LocalInstance = this;
         OnPlayerLocalInstanceSet?.Invoke(this, EventArgs.Empty);
+        transform.position = spawnPositions[OwnerClientId];
+    }
+
+    public override void OnDestroy()
+    {
+        base.OnDestroy();
+        if (NetworkManager.Singleton != null)
+        {
+            NetworkManager.Singleton.OnClientDisconnectCallback -= NetworkManager_OnClientDisconnectCallback;
+        }
+    }
+
+    private void NetworkManager_OnClientDisconnectCallback(ulong clientId)
+    {
+        if (clientId == OwnerClientId && HasKitchenObject())
+        {
+            KitchenObject.Destroy(kitchenObject);
+        }
     }
 
     private void Update()
