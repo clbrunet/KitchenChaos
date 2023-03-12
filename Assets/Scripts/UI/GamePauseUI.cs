@@ -33,12 +33,12 @@ public class GamePauseUI : MonoBehaviour
 
     private void Start()
     {
-        GameManager.Instance.OnGamePaused += GameManager_OnGamePaused;
-        GameManager.Instance.OnGameUnpaused += GameManager_OnGameUnpaused;
+        GameManager.Instance.OnLocalPlayerPaused += GameManager_OnLocalPlayerPaused;
+        GameManager.Instance.OnLocalPlayerUnpaused += GameManager_OnLocalPlayerUnpaused;
         gameObject.SetActive(false);
     }
 
-    private void GameManager_OnGamePaused(object sender, System.EventArgs e)
+    private void GameManager_OnLocalPlayerPaused(object sender, System.EventArgs e)
     {
         if (GameManager.Instance.IsOver())
         {
@@ -48,7 +48,7 @@ public class GamePauseUI : MonoBehaviour
         resumeButton.Select();
     }
 
-    private void GameManager_OnGameUnpaused(object sender, System.EventArgs e)
+    private void GameManager_OnLocalPlayerUnpaused(object sender, System.EventArgs e)
     {
         gameObject.SetActive(false);
         if (GameManager.Instance.IsOver())

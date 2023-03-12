@@ -91,7 +91,7 @@ public class OptionsUI : MonoBehaviour
 
     private void Start()
     {
-        GameManager.Instance.OnGameUnpaused += GameManager_OnGameUnpaused;
+        GameManager.Instance.OnLocalPlayerUnpaused += GameManager_OnGameUnpaused;
         GameInput.Instance.OnBindingRebound += GameInput_OnBindingRebound;
         UpdateVisual();
         gameObject.SetActive(false);
