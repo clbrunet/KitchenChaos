@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Mathematics;
 using UnityEngine;
 
 public class LookAtCamera : MonoBehaviour
@@ -13,6 +14,13 @@ public class LookAtCamera : MonoBehaviour
     }
 
     [SerializeField] private Mode mode;
+    [SerializeField] private bool3 freeze;
+    private Vector3 startEulerAngles;
+
+    private void Start()
+    {
+        startEulerAngles = transform.eulerAngles;
+    }
 
     private void LateUpdate()
     {
@@ -32,5 +40,19 @@ public class LookAtCamera : MonoBehaviour
                 transform.LookAt(transform.position - Camera.main.transform.forward);
                 break;
         }
+        Vector3 eulerAngles = transform.eulerAngles;
+        if (freeze.x)
+        {
+            eulerAngles.x = startEulerAngles.x;
+        }
+        if (freeze.y)
+        {
+            eulerAngles.y = startEulerAngles.y;
+        }
+        if (freeze.z)
+        {
+            eulerAngles.z = startEulerAngles.z;
+        }
+        transform.eulerAngles = eulerAngles;
     }
 }

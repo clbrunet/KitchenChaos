@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.Netcode;
@@ -8,7 +9,8 @@ public class ReadyClientsManager : NetworkBehaviour
 {
     public static ReadyClientsManager Instance { get; private set; }
 
-    private readonly Dictionary<ulong, bool> serverReadyClientsDictionary = new();
+    private readonly Dictionary<ulong, bool> readyClientsDictionary = new();
+    public event EventHandler OnReadyClientsChanged;
 
     private void Awake()
     {
@@ -24,15 +26,27 @@ public class ReadyClientsManager : NetworkBehaviour
     [ServerRpc(RequireOwnership = false)]
     private void SetClientReadyServerRpc(bool isClientReady, ServerRpcParams serverRpcParams = default)
     {
-        serverReadyClientsDictionary[serverRpcParams.Receive.SenderClientId] = isClientReady;
+        SetClientReadyClientRpc(isClientReady, serverRpcParams.Receive.SenderClientId);
         foreach (ulong clientId in NetworkManager.Singleton.ConnectedClientsIds)
         {
-            if (!serverReadyClientsDictionary.ContainsKey(clientId)
-                || !serverReadyClientsDictionary[clientId])
+            if (!readyClientsDictionary.ContainsKey(clientId)
+                || !readyClientsDictionary[clientId])
             {
                 return;
             }
         }
         Loader.LoadNetwork(Loader.Scene.GameScene);
+    }
+
+    [ClientRpc]
+    private void SetClientReadyClientRpc(bool isClientReady, ulong clientId)
+    {
+        readyClientsDictionary[clientId] = isClientReady;
+        OnReadyClientsChanged?.Invoke(this, EventArgs.Empty);
+    }
+
+    public bool IsClientReady(ulong clientId)
+    {
+        return readyClientsDictionary.ContainsKey(clientId) && readyClientsDictionary[clientId];
     }
 }

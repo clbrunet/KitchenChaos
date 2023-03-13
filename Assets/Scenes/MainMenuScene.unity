@@ -1075,6 +1075,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   mode: 0
+  freeze:
+    x: 0
+    y: 0
+    z: 0
 --- !u!1001 &730854347
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1273,6 +1277,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   mode: 0
+  freeze:
+    x: 0
+    y: 0
+    z: 0
 --- !u!1 &1422067446
 GameObject:
   m_ObjectHideFlags: 3
@@ -1629,6 +1637,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   mode: 0
+  freeze:
+    x: 0
+    y: 0
+    z: 0
 --- !u!1001 &1831268100
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1811,6 +1823,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   mode: 0
+  freeze:
+    x: 0
+    y: 0
+    z: 0
 --- !u!1 &1867712734
 GameObject:
   m_ObjectHideFlags: 0
@@ -2070,7 +2086,7 @@ MonoBehaviour:
   priority: 0
   blendDistance: 0
   weight: 1
-  sharedProfile: {fileID: 11400000, guid: 490346bb16092cc468b06a2870516532, type: 2}
+  sharedProfile: {fileID: 11400000, guid: f333b930859ef2648bba955d83d6595a, type: 2}
 --- !u!4 &2134246561
 Transform:
   m_ObjectHideFlags: 0
