@@ -9,6 +9,8 @@ public class GameManager : NetworkBehaviour
 {
     public static GameManager Instance { get; private set; }
 
+    [SerializeField] private NetworkObject playerPrefab;
+
     public enum State
     {
         WaitingToStart,
@@ -63,6 +65,19 @@ public class GameManager : NetworkBehaviour
     {
         state.OnValueChanged += State_OnValueChanged;
         isGamePaused.OnValueChanged += IsGamePaused_OnValueChanged;
+
+        if (IsServer)
+        {
+            NetworkManager.Singleton.SceneManager.OnLoadEventCompleted += SceneManager_ServerOnLoadEventCompleted;
+        }
+    }
+
+    private void SceneManager_ServerOnLoadEventCompleted(string sceneName, UnityEngine.SceneManagement.LoadSceneMode loadSceneMode, List<ulong> clientsCompleted, List<ulong> clientsTimedOut)
+    {
+        foreach (ulong clientId in NetworkManager.Singleton.ConnectedClientsIds)
+        {
+            Instantiate(playerPrefab).SpawnAsPlayerObject(clientId, true);
+        }
     }
 
     public override void OnDestroy()
@@ -71,7 +86,6 @@ public class GameManager : NetworkBehaviour
         if (NetworkManager.Singleton != null)
         {
             NetworkManager.Singleton.OnClientDisconnectCallback -= NetworkManager_OnClientDisconnectCallback;
-            NetworkManager.Singleton.ConnectionApprovalCallback -= NetworkManager_ConnectionApprovalCallback;
         }
     }
 
@@ -89,28 +103,12 @@ public class GameManager : NetworkBehaviour
         IsGamePaused_OnValueChanged(isGamePaused.Value, false);
     }
 
-    public void StartHost()
-    {
-        NetworkManager.Singleton.ConnectionApprovalCallback += NetworkManager_ConnectionApprovalCallback;
-        NetworkManager.Singleton.StartHost();
-    }
-
-    private void NetworkManager_ConnectionApprovalCallback(NetworkManager.ConnectionApprovalRequest connectionApprovalRequest, NetworkManager.ConnectionApprovalResponse connectionApprovalResponse)
-    {
-        connectionApprovalResponse.Approved = state.Value == State.WaitingToStart;
-        if (connectionApprovalResponse.Approved)
-        {
-            connectionApprovalResponse.CreatePlayerObject = true;
-        }
-    }
-
-    public void StartClient()
-    {
-        NetworkManager.Singleton.StartClient();
-    }
-
     private void GameInput_OnInteractAction(object sender, EventArgs e)
     {
+        if (isLocalPlayerPaused)
+        {
+            return;
+        }
         if (state.Value == State.WaitingToStart)
         {
             SetIsLocalPlayerReady(true);
