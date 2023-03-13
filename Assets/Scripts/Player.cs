@@ -58,7 +58,7 @@ public class Player : NetworkBehaviour, IKitchenObjectParent
         Assert.IsNull(LocalInstance, "Multiple local instances of Player");
         LocalInstance = this;
         OnPlayerLocalInstanceSet?.Invoke(this, EventArgs.Empty);
-        transform.position = spawnPositions[OwnerClientId];
+        transform.position = spawnPositions[MultiplayerManager.Instance.GetIndexFromClientId(OwnerClientId)];
     }
 
     public override void OnDestroy()

@@ -4,7 +4,7 @@ using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class HostDisconnectedUI : NetworkBehaviour
+public class HostDisconnectedUI : MonoBehaviour
 {
     [SerializeField] private Button mainMenuButton;
 
@@ -23,9 +23,8 @@ public class HostDisconnectedUI : NetworkBehaviour
         gameObject.SetActive(false);
     }
 
-    public override void OnDestroy()
+    private void OnDestroy()
     {
-        base.OnDestroy();
         if (NetworkManager.Singleton != null)
         {
             NetworkManager.Singleton.OnClientDisconnectCallback -= NetworkManager_OnClientDisconnectCallback;

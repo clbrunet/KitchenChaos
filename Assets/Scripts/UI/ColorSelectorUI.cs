@@ -26,6 +26,11 @@ public class ColorSelectionUI : MonoBehaviour
         UpdateSelection();
     }
 
+    private void OnDestroy()
+    {
+        MultiplayerManager.Instance.OnPlayerDatasChanged -= MultiplayerManager_OnPlayerDatasChanged;
+    }
+
     private void MultiplayerManager_OnPlayerDatasChanged(object sender, System.EventArgs e)
     {
         UpdateSelection();

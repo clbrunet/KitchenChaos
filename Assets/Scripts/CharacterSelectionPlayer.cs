@@ -1,21 +1,30 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class CharacterSelectionPlayer : MonoBehaviour
 {
     [SerializeField] private int index;
     [SerializeField] private PlayerVisual playerVisual;
     [SerializeField] private GameObject readyText;
+    [SerializeField] private Button kickButton;
 
     private void Awake()
     {
         playerVisual = GetComponentInChildren<PlayerVisual>();
+        kickButton.onClick.AddListener(() =>
+        {
+            PlayerData playerData = MultiplayerManager.Instance.GetPlayerDataFromIndex(index);
+            MultiplayerManager.Instance.KickPlayer(playerData.clientId);
+        });
     }
 
     private void Start()
     {
+        kickButton.gameObject.SetActive(NetworkManager.Singleton.IsServer && index != 0);
         MultiplayerManager.Instance.OnPlayerDatasChanged += MultiplayerManager_OnPlayerDatasChanged;
         ReadyClientsManager.Instance.OnReadyClientsChanged += ReadyClientsManager_OnReadyClientsChanged;
         UpdateVisual();
@@ -23,8 +32,6 @@ public class CharacterSelectionPlayer : MonoBehaviour
 
     private void OnDestroy()
     {
-        // TODO: try without it and make the event invoke (for learning purpose)
-        print("TODO: try without it and make the event invoke (for learning purpose)");
         MultiplayerManager.Instance.OnPlayerDatasChanged -= MultiplayerManager_OnPlayerDatasChanged;
     }
 

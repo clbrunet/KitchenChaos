@@ -197,4 +197,10 @@ public class MultiplayerManager : NetworkBehaviour
         }
         return -1;
     }
+
+    public void KickPlayer(ulong clientId)
+    {
+        NetworkManager.Singleton.DisconnectClient(clientId);
+        NetworkManager_HostOnClientDisconnectedCallback(clientId);
+    }
 }
