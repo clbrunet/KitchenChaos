@@ -17,6 +17,8 @@ public class MultiplayerManager : NetworkBehaviour
     private NetworkList<PlayerData> playerDatas;
     public event EventHandler OnPlayerDatasChanged;
 
+    [SerializeField] private Color[] playerSelectableColorArray;
+
     private void Awake()
     {
         Assert.IsNull(Instance, "Multiple instances of MultiplayerManager");
@@ -36,6 +38,7 @@ public class MultiplayerManager : NetworkBehaviour
     {
         NetworkManager.Singleton.ConnectionApprovalCallback += NetworkManager_HostConnectionApprovalCallback;
         NetworkManager.Singleton.OnClientConnectedCallback += NetworkManager_HostOnClientConnectedCallback;
+        NetworkManager.Singleton.OnClientDisconnectCallback += NetworkManager_HostOnClientDisconnectedCallback;
         NetworkManager.Singleton.StartHost();
     }
 
@@ -69,7 +72,21 @@ public class MultiplayerManager : NetworkBehaviour
 
     private void NetworkManager_HostOnClientConnectedCallback(ulong clientId)
     {
-        playerDatas.Add(new PlayerData { clientId = clientId });
+        playerDatas.Add(new PlayerData {
+            clientId = clientId,
+            colorId = GetFirstUnusedColorId(),
+        });
+    }
+
+    private void NetworkManager_HostOnClientDisconnectedCallback(ulong clientId)
+    {
+        for (int i = 0; i < playerDatas.Count; i++)
+        {
+            if (playerDatas[i].clientId == clientId)
+            {
+                playerDatas.RemoveAt(i);
+            }
+        }
     }
 
     public void StartClient()
@@ -98,8 +115,86 @@ public class MultiplayerManager : NetworkBehaviour
         return index < playerDatas.Count;
     }
 
+    public PlayerData GetPlayerData()
+    {
+        return GetPlayerDataFromClientId(NetworkManager.Singleton.LocalClientId);
+    }
+
+    public PlayerData GetPlayerDataFromClientId(ulong clientId)
+    {
+        foreach (PlayerData playerData in playerDatas)
+        {
+            if (clientId == playerData.clientId)
+            {
+                return playerData;
+            }
+        }
+        return default;
+    }
+
     public PlayerData GetPlayerDataFromIndex(int index)
     {
         return playerDatas[index];
+    }
+
+    public int GetIndexFromClientId(ulong clientId)
+    {
+        int i = 0;
+        foreach (PlayerData playerData in playerDatas)
+        {
+            if (clientId == playerData.clientId)
+            {
+                return i;
+            }
+            i++;
+        }
+        return -1;
+    }
+
+    public Color GetPlayerSelectableColor(int colorId)
+    {
+        return playerSelectableColorArray[colorId];
+    }
+
+    public void ChangePlayerColor(int colorId)
+    {
+        ChangePlayerColorServerRpc(colorId);
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    private void ChangePlayerColorServerRpc(int colorId, ServerRpcParams serverRpcParams = default)
+    {
+        if (!IsColorAvailable(colorId))
+        {
+            return;
+        }
+        int index = GetIndexFromClientId(serverRpcParams.Receive.SenderClientId);
+        PlayerData senderPlayerData = playerDatas[index];
+        senderPlayerData.colorId = colorId;
+        playerDatas[index] = senderPlayerData;
+    }
+
+    private bool IsColorAvailable(int colorId)
+    {
+        foreach (PlayerData playerData in playerDatas)
+        {
+            if (colorId == playerData.colorId)
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    private int GetFirstUnusedColorId()
+    {
+        for (int i = 0; i < playerSelectableColorArray.Length; i++)
+        {
+            if (IsColorAvailable(i))
+            {
+                return i;
+            }
+        }
+        return -1;
     }
 }

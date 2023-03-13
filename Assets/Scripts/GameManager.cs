@@ -86,7 +86,10 @@ public class GameManager : NetworkBehaviour
         if (NetworkManager.Singleton != null)
         {
             NetworkManager.Singleton.OnClientDisconnectCallback -= NetworkManager_OnClientDisconnectCallback;
-            NetworkManager.Singleton.SceneManager.OnLoadEventCompleted -= SceneManager_ServerOnLoadEventCompleted;
+            if (NetworkManager.Singleton.SceneManager != null)
+            {
+                NetworkManager.Singleton.SceneManager.OnLoadEventCompleted -= SceneManager_ServerOnLoadEventCompleted;
+            }
         }
     }
 

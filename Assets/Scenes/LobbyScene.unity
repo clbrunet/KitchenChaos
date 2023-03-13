@@ -958,6 +958,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 22fd4d2715143294e8949530f5585c00, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  playerSelectableColorArray:
+  - {r: 1, g: 1, b: 0, a: 1}
+  - {r: 1, g: 0, b: 0, a: 1}
+  - {r: 1, g: 0, b: 1, a: 1}
+  - {r: 0.5, g: 0, b: 1, a: 1}
+  - {r: 0, g: 0, b: 1, a: 1}
+  - {r: 0, g: 1, b: 1, a: 1}
+  - {r: 0, g: 1, b: 0, a: 1}
+  - {r: 0.078431375, g: 0.3137255, b: 0.078431375, a: 1}
+  - {r: 0.7830189, g: 0.7830189, b: 0.7830189, a: 1}
+  - {r: 0.21568628, g: 0.21568628, b: 0.21568628, a: 1}
 --- !u!114 &1237309684
 MonoBehaviour:
   m_ObjectHideFlags: 0

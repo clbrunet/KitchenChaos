@@ -30,11 +30,19 @@ public class Player : NetworkBehaviour, IKitchenObjectParent
     public static event EventHandler OnAnyObjectPickup;
 
     [SerializeField] private Vector3[] spawnPositions;
+    [SerializeField] private PlayerVisual playerVisual;
+
+    private void Awake()
+    {
+        playerVisual = GetComponentInChildren<PlayerVisual>();
+    }
 
     private void Start()
     {
         GameInput.Instance.OnInteractAction += GameInput_OnInteractAction;
         GameInput.Instance.OnInteractAlternateAction += GameInput_OnInteractAlternateAction;
+        PlayerData playerData = MultiplayerManager.Instance.GetPlayerDataFromClientId(OwnerClientId);
+        playerVisual.SetPlayerColor(MultiplayerManager.Instance.GetPlayerSelectableColor(playerData.colorId));
     }
 
     public override void OnNetworkSpawn()
