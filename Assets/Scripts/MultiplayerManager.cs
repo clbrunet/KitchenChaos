@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.Netcode;
+using Unity.Services.Authentication;
 using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.SceneManagement;
@@ -13,9 +14,12 @@ public class MultiplayerManager : NetworkBehaviour
     public event EventHandler OnTryingToJoin;
     public event EventHandler OnFailedToJoin;
 
-    private const int MAX_PLAYER_COUNT = 4;
+    public const int MAX_PLAYER_COUNT = 4;
     private NetworkList<PlayerData> playerDatas;
     public event EventHandler OnPlayerDatasChanged;
+
+    public const string PLAYER_PREFS_PLAYER_NAME = "PlayerName";
+    private string playerName;
 
     [SerializeField] private Color[] playerSelectableColorArray;
 
@@ -25,6 +29,7 @@ public class MultiplayerManager : NetworkBehaviour
         Instance = this;
         playerDatas = new NetworkList<PlayerData>();
         playerDatas.OnListChanged += PlayerDatas_OnListChanged;
+        playerName = PlayerPrefs.GetString(PLAYER_PREFS_PLAYER_NAME, "PlayerName" + UnityEngine.Random.Range(100, 1000));
 
         DontDestroyOnLoad(gameObject);
     }
@@ -72,9 +77,12 @@ public class MultiplayerManager : NetworkBehaviour
 
     private void NetworkManager_HostOnClientConnectedCallback(ulong clientId)
     {
-        playerDatas.Add(new PlayerData {
+        playerDatas.Add(new PlayerData
+        {
             clientId = clientId,
             colorId = GetFirstUnusedColorId(),
+            name = playerName,
+            id = AuthenticationService.Instance.PlayerId,
         });
     }
 
@@ -99,6 +107,8 @@ public class MultiplayerManager : NetworkBehaviour
 
     private void NetworkManager_ClientOnClientConnectedCallback(ulong obj)
     {
+        SetPlayerNameServerRpc(playerName);
+        SetPlayerIdServerRpc(AuthenticationService.Instance.PlayerId);
         NetworkManager.Singleton.OnClientConnectedCallback -= NetworkManager_ClientOnClientConnectedCallback;
         NetworkManager.Singleton.OnClientDisconnectCallback -= NetworkManager_ClientOnClientDisconnectCallback;
     }
@@ -108,6 +118,35 @@ public class MultiplayerManager : NetworkBehaviour
         OnFailedToJoin?.Invoke(this, EventArgs.Empty);
         NetworkManager.Singleton.OnClientConnectedCallback -= NetworkManager_ClientOnClientConnectedCallback;
         NetworkManager.Singleton.OnClientDisconnectCallback -= NetworkManager_ClientOnClientDisconnectCallback;
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    private void SetPlayerNameServerRpc(string playerName, ServerRpcParams serverRpcParams = default)
+    {
+        int index = GetIndexFromClientId(serverRpcParams.Receive.SenderClientId);
+        PlayerData senderPlayerData = playerDatas[index];
+        senderPlayerData.name = playerName;
+        playerDatas[index] = senderPlayerData;
+    }
+
+    public string GetPlayerName()
+    {
+        return playerName;
+    }
+
+    public void SetPlayerName(string playerName)
+    {
+        this.playerName = playerName;
+        PlayerPrefs.SetString(PLAYER_PREFS_PLAYER_NAME, playerName);
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    private void SetPlayerIdServerRpc(string playerId, ServerRpcParams serverRpcParams = default)
+    {
+        int index = GetIndexFromClientId(serverRpcParams.Receive.SenderClientId);
+        PlayerData senderPlayerData = playerDatas[index];
+        senderPlayerData.id = playerId;
+        playerDatas[index] = senderPlayerData;
     }
 
     public bool IsIndexConnected(int index)
@@ -185,7 +224,7 @@ public class MultiplayerManager : NetworkBehaviour
         }
         return true;
     }
-    
+
     private int GetFirstUnusedColorId()
     {
         for (int i = 0; i < playerSelectableColorArray.Length; i++)

@@ -35,6 +35,7 @@ public class ReadyClientsManager : NetworkBehaviour
                 return;
             }
         }
+        LobbyManager.Instance.DeleteLobby();
         Loader.LoadNetwork(Loader.Scene.GameScene);
     }
 
