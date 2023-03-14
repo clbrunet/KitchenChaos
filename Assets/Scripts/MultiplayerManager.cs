@@ -92,6 +92,7 @@ public class MultiplayerManager : NetworkBehaviour
         {
             if (playerDatas[i].clientId == clientId)
             {
+                LobbyManager.Instance.KickPlayer(playerDatas[i].id.ToString());
                 playerDatas.RemoveAt(i);
             }
         }
