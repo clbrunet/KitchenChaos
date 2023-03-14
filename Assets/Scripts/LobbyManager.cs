@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.Services.Authentication;
@@ -13,6 +14,13 @@ public class LobbyManager : MonoBehaviour
 
     private bool isCreatingLobby = false;
     private Lobby joinedLobby;
+
+    public event EventHandler OnLobbyCreationStarted;
+    public event EventHandler OnLobbyCreationFailed;
+
+    public event EventHandler OnJoinStarted;
+    public event EventHandler OnJoinFailed;
+    public event EventHandler OnQuickJoinFailed;
 
     private void Awake()
     {
@@ -31,7 +39,7 @@ public class LobbyManager : MonoBehaviour
             return;
         }
         InitializationOptions initializationOptions = new();
-        initializationOptions.SetProfile(Random.Range(0, 10000).ToString());
+        initializationOptions.SetProfile(UnityEngine.Random.Range(0, 10000).ToString());
         await UnityServices.InitializeAsync(initializationOptions);
         await AuthenticationService.Instance.SignInAnonymouslyAsync();
     }
@@ -44,6 +52,7 @@ public class LobbyManager : MonoBehaviour
         }
         try
         {
+            OnLobbyCreationStarted?.Invoke(this, EventArgs.Empty);
             isCreatingLobby = true;
             joinedLobby = await LobbyService.Instance.CreateLobbyAsync(lobbyName, MultiplayerManager.MAX_PLAYER_COUNT, new CreateLobbyOptions
             {
@@ -56,6 +65,7 @@ public class LobbyManager : MonoBehaviour
         }
         catch (LobbyServiceException e)
         {
+            OnLobbyCreationFailed?.Invoke(this, EventArgs.Empty);
             isCreatingLobby = false;
             Debug.Log(e);
         }
@@ -87,11 +97,13 @@ public class LobbyManager : MonoBehaviour
     {
         try
         {
+            OnJoinStarted?.Invoke(this, EventArgs.Empty);
             joinedLobby = await LobbyService.Instance.QuickJoinLobbyAsync();
             MultiplayerManager.Instance.StartClient();
         }
         catch (LobbyServiceException e)
         {
+            OnQuickJoinFailed?.Invoke(this, EventArgs.Empty);
             Debug.Log(e);
         }
     }
@@ -100,11 +112,13 @@ public class LobbyManager : MonoBehaviour
     {
         try
         {
+            OnJoinStarted?.Invoke(this, EventArgs.Empty);
             joinedLobby = await LobbyService.Instance.JoinLobbyByCodeAsync(lobbyCode);
             MultiplayerManager.Instance.StartClient();
         }
         catch (LobbyServiceException e)
         {
+            OnJoinFailed?.Invoke(this, EventArgs.Empty);
             Debug.Log(e);
         }
     }
