@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
+using Unity.Services.Lobbies.Models;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -13,6 +14,8 @@ public class LobbyUI : MonoBehaviour
     [SerializeField] private Button quickJoinButton;
     [SerializeField] private TMP_InputField lobbyCodeInputField;
     [SerializeField] private Button joinCodeButton;
+    [SerializeField] private Transform lobbySelectorsContainer;
+    [SerializeField] private LobbySelectorUI lobbySelectorTemplate;
 
     private void Awake()
     {
@@ -41,5 +44,25 @@ public class LobbyUI : MonoBehaviour
         {
             MultiplayerManager.Instance.SetPlayerName(value);
         });
+        LobbyManager.Instance.OnLobbyListChanged += LobbyManager_OnLobbyListChanged;
+    }
+
+    private void OnDestroy()
+    {
+        LobbyManager.Instance.OnLobbyListChanged -= LobbyManager_OnLobbyListChanged;
+    }
+
+    private void LobbyManager_OnLobbyListChanged(object sender, LobbyManager.OnLobbyListChangedEventArgs e)
+    {
+        foreach (LobbySelectorUI lobbySelectorUI in lobbySelectorsContainer.GetComponentsInChildren<LobbySelectorUI>(false))
+        {
+            Destroy(lobbySelectorUI.gameObject);
+        }
+        foreach (Lobby lobby in e.lobbies)
+        {
+            LobbySelectorUI lobbySelectorUI = Instantiate(lobbySelectorTemplate, lobbySelectorsContainer);
+            lobbySelectorUI.SetLobby(lobby);
+            lobbySelectorUI.gameObject.SetActive(true);
+        }
     }
 }

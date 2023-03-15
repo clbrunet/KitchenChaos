@@ -56,7 +56,7 @@ public class MessageUI : MonoBehaviour
 
     private void LobbyManager_OnJoinFailed(object sender, System.EventArgs e)
     {
-        ShowMessage("Failed to join a lobby");
+        ShowMessage("Failed to join the lobby");
     }
 
     private void LobbyManager_OnLobbyCreationFailed(object sender, System.EventArgs e)
