@@ -93,6 +93,7 @@ public class StoveCounter : BaseCounter, IHasProgression
     private void StopCookingServerRpc()
     {
         StopCoroutine(serverCookCoroutine);
+        serverCookCoroutine = null;
         cookingElapsedTime.Value = 0f;
         TurnOffServerRpc();
     }
