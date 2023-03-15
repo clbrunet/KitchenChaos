@@ -73,6 +73,10 @@ public class StoveCounter : BaseCounter, IHasProgression
     [ServerRpc(RequireOwnership = false)]
     private void CookServerRpc()
     {
+        if (serverCookCoroutine != null)
+        {
+            return;
+        }
         StoveRecipeSO recipe = GetRecipe(kitchenObject.GetKitchenObjectSO());
         SetCurrentRecipeCookTimeClientRpc();
         serverCookCoroutine = StartCoroutine(Cook(recipe));

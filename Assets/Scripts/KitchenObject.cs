@@ -35,6 +35,12 @@ public class KitchenObject : NetworkBehaviour
     [ServerRpc(RequireOwnership = false)]
     private void SetParentServerRpc(NetworkObjectReference parentNetworkObjectReference)
     {
+        parentNetworkObjectReference.TryGet(out NetworkObject parentNetworkObject);
+        IKitchenObjectParent parent = parentNetworkObject.GetComponent<IKitchenObjectParent>();
+        if (parent.HasKitchenObject())
+        {
+            return;
+        }
         SetParentClientRpc(parentNetworkObjectReference);
     }
 
