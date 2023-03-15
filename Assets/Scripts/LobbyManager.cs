@@ -56,6 +56,7 @@ public class LobbyManager : MonoBehaviour
     {
         if (UnityServices.State == ServicesInitializationState.Initialized)
         {
+            AuthenticationService_SignedIn();
             return;
         }
         InitializationOptions initializationOptions = new();
