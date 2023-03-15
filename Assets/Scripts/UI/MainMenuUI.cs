@@ -5,13 +5,20 @@ using UnityEngine.UI;
 
 public class MainMenuUI : MonoBehaviour
 {
-    [SerializeField] private Button playButton;
+    [SerializeField] private Button multiplayerButton;
+    [SerializeField] private Button singleplayerButton;
     [SerializeField] private Button quitButton;
 
     private void Awake()
     {
-        playButton.onClick.AddListener(() =>
+        multiplayerButton.onClick.AddListener(() =>
         {
+            MultiplayerManager.isSingleplayer = false;
+            Loader.Load(Loader.Scene.LobbyScene);
+        });
+        singleplayerButton.onClick.AddListener(() =>
+        {
+            MultiplayerManager.isSingleplayer = true;
             Loader.Load(Loader.Scene.LobbyScene);
         });
         quitButton.onClick.AddListener(() =>

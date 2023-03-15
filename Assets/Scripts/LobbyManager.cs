@@ -48,33 +48,22 @@ public class LobbyManager : MonoBehaviour
         Instance = this;
 
         DontDestroyOnLoad(gameObject);
-
-        InitalizeUnityAuthentication();
     }
 
-    private async void InitalizeUnityAuthentication()
+    private void Start()
     {
-        if (UnityServices.State == ServicesInitializationState.Initialized)
-        {
-            AuthenticationService_SignedIn();
-            return;
-        }
-        InitializationOptions initializationOptions = new();
-        initializationOptions.SetProfile(UnityEngine.Random.Range(0, 10000).ToString());
-        await UnityServices.InitializeAsync(initializationOptions);
-        AuthenticationService.Instance.SignedIn += AuthenticationService_SignedIn;
-        await AuthenticationService.Instance.SignInAnonymouslyAsync();
+        MultiplayerManager.Instance.OnUnityAuthenticationInitialized += MultiplayerManager_OnUnityAuthenticationInitialized;
     }
 
     private void OnDestroy()
     {
-        if (AuthenticationService.Instance != null)
+        if (MultiplayerManager.Instance != null)
         {
-            AuthenticationService.Instance.SignedIn -= AuthenticationService_SignedIn;
+            MultiplayerManager.Instance.OnUnityAuthenticationInitialized -= MultiplayerManager_OnUnityAuthenticationInitialized;
         }
     }
 
-    private void AuthenticationService_SignedIn()
+    private void MultiplayerManager_OnUnityAuthenticationInitialized(object sender, EventArgs e)
     {
         const float LOBBIES_REFRESH_INTERVAL = 5f;
         InvokeRepeating(nameof(RefreshLobbies), 0f, LOBBIES_REFRESH_INTERVAL);

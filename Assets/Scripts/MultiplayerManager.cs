@@ -2,7 +2,12 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.Netcode;
+using Unity.Netcode.Transports.UTP;
+using Unity.Networking.Transport.Relay;
 using Unity.Services.Authentication;
+using Unity.Services.Core;
+using Unity.Services.Relay;
+using Unity.Services.Relay.Models;
 using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.SceneManagement;
@@ -23,6 +28,10 @@ public class MultiplayerManager : NetworkBehaviour
 
     [SerializeField] private Color[] playerSelectableColorArray;
 
+    public event EventHandler OnUnityAuthenticationInitialized;
+
+    public static bool isSingleplayer;
+
     private void Awake()
     {
         Assert.IsNull(Instance, "Multiple instances of MultiplayerManager");
@@ -32,6 +41,53 @@ public class MultiplayerManager : NetworkBehaviour
         playerName = PlayerPrefs.GetString(PLAYER_PREFS_PLAYER_NAME, "PlayerName" + UnityEngine.Random.Range(100, 1000));
 
         DontDestroyOnLoad(gameObject);
+    }
+
+    private IEnumerator Start()
+    {
+        yield return null;
+        OnUnityAuthenticationInitialized += MultiplayerManager_OnUnityAuthenticationInitialized;
+        InitalizeUnityAuthentication();
+    }
+
+    public override void OnDestroy()
+    {
+        base.OnDestroy();
+        if (NetworkManager.Singleton != null)
+        {
+            NetworkManager.Singleton.ConnectionApprovalCallback -= NetworkManager_HostConnectionApprovalCallback;
+            NetworkManager.Singleton.OnClientConnectedCallback -= NetworkManager_HostOnClientConnectedCallback;
+        }
+    }
+
+    private async void InitalizeUnityAuthentication()
+    {
+        if (UnityServices.State == ServicesInitializationState.Initialized)
+        {
+            OnUnityAuthenticationInitialized?.Invoke(this, EventArgs.Empty);
+            return;
+        }
+        try
+        {
+            InitializationOptions initializationOptions = new();
+            initializationOptions.SetProfile(UnityEngine.Random.Range(0, 10000).ToString());
+            await UnityServices.InitializeAsync(initializationOptions);
+            await AuthenticationService.Instance.SignInAnonymouslyAsync();
+        }
+        catch (RequestFailedException e)
+        {
+            Debug.Log(e);
+        }
+        OnUnityAuthenticationInitialized?.Invoke(this, EventArgs.Empty);
+    }
+
+    private void MultiplayerManager_OnUnityAuthenticationInitialized(object sender, EventArgs e)
+    {
+        if (isSingleplayer)
+        {
+            StartHost();
+            Loader.LoadNetwork(Loader.Scene.GameScene);
+        }
     }
 
     private void PlayerDatas_OnListChanged(NetworkListEvent<PlayerData> changeEvent)
@@ -45,16 +101,6 @@ public class MultiplayerManager : NetworkBehaviour
         NetworkManager.Singleton.OnClientConnectedCallback += NetworkManager_HostOnClientConnectedCallback;
         NetworkManager.Singleton.OnClientDisconnectCallback += NetworkManager_HostOnClientDisconnectedCallback;
         NetworkManager.Singleton.StartHost();
-    }
-
-    public override void OnDestroy()
-    {
-        base.OnDestroy();
-        if (NetworkManager.Singleton != null)
-        {
-            NetworkManager.Singleton.ConnectionApprovalCallback -= NetworkManager_HostConnectionApprovalCallback;
-            NetworkManager.Singleton.OnClientConnectedCallback -= NetworkManager_HostOnClientConnectedCallback;
-        }
     }
 
     private void NetworkManager_HostConnectionApprovalCallback(NetworkManager.ConnectionApprovalRequest connectionApprovalRequest,
