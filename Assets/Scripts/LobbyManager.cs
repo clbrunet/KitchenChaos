@@ -90,21 +90,18 @@ public class LobbyManager : MonoBehaviour
         {
             OnLobbyCreationStarted?.Invoke(this, EventArgs.Empty);
             isCreatingLobby = true;
+            Allocation allocation = await RelayService.Instance.CreateAllocationAsync(MultiplayerManager.MAX_PLAYER_COUNT - 1);
+            string relayJoinCode = await RelayService.Instance.GetJoinCodeAsync(allocation.AllocationId);
             joinedLobby = await LobbyService.Instance.CreateLobbyAsync(lobbyName, MultiplayerManager.MAX_PLAYER_COUNT, new CreateLobbyOptions
             {
-                IsPrivate = isPrivate
-            });
-            isCreatingLobby = false;
-            StartCoroutine(SendHeartbeats());
-            Allocation allocation = await RelayService.Instance.CreateAllocationAsync(MultiplayerManager.MAX_PLAYER_COUNT);
-            string relayJoinCode = await RelayService.Instance.GetJoinCodeAsync(allocation.AllocationId);
-            await LobbyService.Instance.UpdateLobbyAsync(joinedLobby.Id, new UpdateLobbyOptions
-            {
+                IsPrivate = isPrivate,
                 Data = new Dictionary<string, DataObject>
                 {
                     { LOBBY_DATA_RELAY_JOIN_CODE, new DataObject(DataObject.VisibilityOptions.Member, relayJoinCode) }
                 },
             });
+            isCreatingLobby = false;
+            StartCoroutine(SendHeartbeats());
             NetworkManager.Singleton.GetComponent<UnityTransport>().SetRelayServerData(new RelayServerData(allocation, "dtls"));
             MultiplayerManager.Instance.StartHost();
             Loader.LoadNetwork(Loader.Scene.CharacterSelectionScene);
