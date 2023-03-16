@@ -20,9 +20,19 @@ public class LobbySelectorUI : MonoBehaviour
         });
     }
 
+    public Lobby GetLobby()
+    {
+        return lobby;
+    }
+
     public void SetLobby(Lobby lobby)
     {
         this.lobby = lobby;
         lobbyNameText.text = lobby.Name;
+    }
+
+    public Button GetButton()
+    {
+        return button;
     }
 }

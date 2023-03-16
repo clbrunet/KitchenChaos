@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using TMPro;
 using Unity.Services.Lobbies.Models;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 public class LobbyUI : MonoBehaviour
@@ -54,15 +55,30 @@ public class LobbyUI : MonoBehaviour
 
     private void LobbyManager_OnLobbyListChanged(object sender, LobbyManager.OnLobbyListChangedEventArgs e)
     {
+        string selectedLobbyId = "";
         foreach (LobbySelectorUI lobbySelectorUI in lobbySelectorsContainer.GetComponentsInChildren<LobbySelectorUI>(false))
         {
+            if (EventSystem.current.currentSelectedGameObject == lobbySelectorUI.GetButton().gameObject)
+            {
+                selectedLobbyId = lobbySelectorUI.GetLobby().Id;
+            }
             Destroy(lobbySelectorUI.gameObject);
         }
+        bool hasSelected = false;
         foreach (Lobby lobby in e.lobbies)
         {
             LobbySelectorUI lobbySelectorUI = Instantiate(lobbySelectorTemplate, lobbySelectorsContainer);
             lobbySelectorUI.SetLobby(lobby);
+            if (lobby.Id == selectedLobbyId)
+            {
+                EventSystem.current.SetSelectedGameObject(lobbySelectorUI.GetButton().gameObject);
+                hasSelected = true;
+            }
             lobbySelectorUI.gameObject.SetActive(true);
+        }
+        if (!hasSelected && selectedLobbyId != "")
+        {
+            EventSystem.current.SetSelectedGameObject(EventSystem.current.firstSelectedGameObject);
         }
     }
 }
