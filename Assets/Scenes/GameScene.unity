@@ -10624,7 +10624,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerPrefab: {fileID: 2342495776051480896, guid: bef917b3d77287c45981990088af8f0e,
     type: 3}
-  gamePlayingTimerMax: 10
+  gamePlayingTimerMax: 90
 --- !u!4 &1315233678
 Transform:
   m_ObjectHideFlags: 0

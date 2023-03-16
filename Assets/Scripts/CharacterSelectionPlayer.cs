@@ -9,7 +9,6 @@ using UnityEngine.UI;
 public class CharacterSelectionPlayer : MonoBehaviour
 {
     [SerializeField] private int index;
-    [SerializeField] private Button kickButton;
     [SerializeField] private TextMeshPro playerNameText;
     [SerializeField] private GameObject readyText;
     [SerializeField] private PlayerVisual playerVisual;
@@ -17,17 +16,10 @@ public class CharacterSelectionPlayer : MonoBehaviour
     private void Awake()
     {
         playerVisual = GetComponentInChildren<PlayerVisual>();
-        kickButton.onClick.AddListener(() =>
-        {
-            PlayerData playerData = MultiplayerManager.Instance.GetPlayerDataFromIndex(index);
-            LobbyManager.Instance.KickPlayer(playerData.id.ToString());
-            MultiplayerManager.Instance.KickPlayer(playerData.clientId);
-        });
     }
 
     private void Start()
     {
-        kickButton.gameObject.SetActive(NetworkManager.Singleton.IsServer && index != 0);
         MultiplayerManager.Instance.OnPlayerDatasChanged += MultiplayerManager_OnPlayerDatasChanged;
         ReadyClientsManager.Instance.OnReadyClientsChanged += ReadyClientsManager_OnReadyClientsChanged;
         UpdateVisual();
