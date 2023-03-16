@@ -30,7 +30,7 @@ public class MultiplayerManager : NetworkBehaviour
 
     public event EventHandler OnUnityAuthenticationInitialized;
 
-    public static bool isSingleplayer;
+    public static bool isSingleplayer = false;
 
     private void Awake()
     {

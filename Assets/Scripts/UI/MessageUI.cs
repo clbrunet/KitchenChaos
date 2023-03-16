@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using TMPro;
 using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 public class MessageUI : MonoBehaviour
@@ -15,6 +16,7 @@ public class MessageUI : MonoBehaviour
         closeButton.onClick.AddListener(() =>
         {
             gameObject.SetActive(false);
+            EventSystem.current.SetSelectedGameObject(EventSystem.current.firstSelectedGameObject);
         });
     }
 
@@ -80,5 +82,6 @@ public class MessageUI : MonoBehaviour
     {
         messageText.text = message;
         gameObject.SetActive(true);
+        closeButton.Select();
     }
 }

@@ -9,8 +9,8 @@ public class GamePauseUI : MonoBehaviour
     [SerializeField] private Button resumeButton;
     [SerializeField] private Button optionsButton;
     [SerializeField] private Button mainMenuButton;
-    [SerializeField] private GameObject hostDisconnectedUI;
-    [SerializeField] private GameObject gameOverUI;
+    [SerializeField] private HostDisconnectedUI hostDisconnectedUI;
+    [SerializeField] private GameOverUI gameOverUI;
 
     private void Awake()
     {
@@ -43,13 +43,15 @@ public class GamePauseUI : MonoBehaviour
 
     private void GameManager_OnLocalPlayerPaused(object sender, System.EventArgs e)
     {
+        hostDisconnectedUI.shouldAppear = false;
+        gameOverUI.shouldAppear = false;
         if (GameManager.Instance.IsHostDisconnected())
         {
-            hostDisconnectedUI.SetActive(false);
+            hostDisconnectedUI.gameObject.SetActive(false);
         }
         if (GameManager.Instance.IsOver())
         {
-            gameOverUI.SetActive(false);
+            gameOverUI.gameObject.SetActive(false);
         }
         gameObject.SetActive(true);
         resumeButton.Select();
@@ -57,14 +59,17 @@ public class GamePauseUI : MonoBehaviour
 
     private void GameManager_OnLocalPlayerUnpaused(object sender, System.EventArgs e)
     {
+        gameOverUI.shouldAppear = true;
         gameObject.SetActive(false);
-        if (GameManager.Instance.IsHostDisconnected())
-        {
-            hostDisconnectedUI.SetActive(true);
-        }
         if (GameManager.Instance.IsOver())
         {
-            gameOverUI.SetActive(true);
+            gameOverUI.gameObject.SetActive(true);
+            return;
+        }
+        hostDisconnectedUI.shouldAppear = true;
+        if (GameManager.Instance.IsHostDisconnected())
+        {
+            hostDisconnectedUI.gameObject.SetActive(true);
         }
     }
 }

@@ -648,7 +648,7 @@ GameObject:
   - component: {fileID: 124096073}
   - component: {fileID: 124096072}
   m_Layer: 5
-  m_Name: GameOverText
+  m_Name: Text
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3126,6 +3126,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   mainMenuButton: {fileID: 619542463}
+  shouldAppear: 1
 --- !u!1001 &358539375
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -5443,7 +5444,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Navigation:
-    m_Mode: 3
+    m_Mode: 0
     m_WrapAround: 0
     m_SelectOnUp: {fileID: 0}
     m_SelectOnDown: {fileID: 0}
@@ -9662,6 +9663,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   recipesDeliveredText: {fileID: 762996649}
   mainMenuButton: {fileID: 610208657}
+  hostDisconnectedUI: {fileID: 352863453}
+  shouldAppear: 1
 --- !u!1001 &1139051541
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -10081,8 +10084,8 @@ RectTransform:
   - {fileID: 672563926}
   - {fileID: 751862009}
   - {fileID: 1482258209}
-  - {fileID: 352863452}
   - {fileID: 1116606093}
+  - {fileID: 352863452}
   - {fileID: 608538384}
   - {fileID: 1540064195}
   - {fileID: 766127661}
@@ -10621,7 +10624,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerPrefab: {fileID: 2342495776051480896, guid: bef917b3d77287c45981990088af8f0e,
     type: 3}
-  gamePlayingTimerMax: 90
+  gamePlayingTimerMax: 10
 --- !u!4 &1315233678
 Transform:
   m_ObjectHideFlags: 0
@@ -12439,8 +12442,8 @@ MonoBehaviour:
   resumeButton: {fileID: 1510548451}
   optionsButton: {fileID: 1106423918}
   mainMenuButton: {fileID: 1632447786}
-  hostDisconnectedUI: {fileID: 352863451}
-  gameOverUI: {fileID: 1116606092}
+  hostDisconnectedUI: {fileID: 352863453}
+  gameOverUI: {fileID: 1116606094}
 --- !u!1 &1541792902
 GameObject:
   m_ObjectHideFlags: 0

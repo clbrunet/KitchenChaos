@@ -8,6 +8,9 @@ public class HostDisconnectedUI : MonoBehaviour
 {
     [SerializeField] private Button mainMenuButton;
 
+    private bool hasStarted = false;
+    [HideInInspector] public bool shouldAppear = true;
+
     private void Awake()
     {
         mainMenuButton.onClick.AddListener(() =>
@@ -17,10 +20,20 @@ public class HostDisconnectedUI : MonoBehaviour
         });
     }
 
+    private void OnEnable()
+    {
+        if (!hasStarted)
+        {
+            return;
+        }
+        mainMenuButton.Select();
+    }
+
     private void Start()
     {
         NetworkManager.Singleton.OnClientDisconnectCallback += NetworkManager_OnClientDisconnectCallback;
         gameObject.SetActive(false);
+        hasStarted = true;
     }
 
     private void OnDestroy()
@@ -33,14 +46,9 @@ public class HostDisconnectedUI : MonoBehaviour
 
     private void NetworkManager_OnClientDisconnectCallback(ulong clientId)
     {
-        if (clientId == NetworkManager.ServerClientId)
+        if (clientId == NetworkManager.ServerClientId && shouldAppear)
         {
             gameObject.SetActive(true);
         }
-    }
-
-    private void OnEnable()
-    {
-        mainMenuButton.Select();
     }
 }

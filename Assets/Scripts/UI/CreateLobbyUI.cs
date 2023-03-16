@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 public class CreateLobbyUI : MonoBehaviour
@@ -11,11 +12,14 @@ public class CreateLobbyUI : MonoBehaviour
     [SerializeField] private Button createPublicButton;
     [SerializeField] private Button createPrivateButton;
 
+    private bool hasStarted = false;
+
     private void Awake()
     {
         closeButton.onClick.AddListener(() =>
         {
             gameObject.SetActive(false);
+            EventSystem.current.SetSelectedGameObject(EventSystem.current.firstSelectedGameObject);
         });
         createPublicButton.onClick.AddListener(() =>
         {
@@ -27,8 +31,18 @@ public class CreateLobbyUI : MonoBehaviour
         });
     }
 
+    private void OnEnable()
+    {
+        if (!hasStarted)
+        {
+            return;
+        }
+        createPublicButton.Select();
+    }
+
     private void Start()
     {
         gameObject.SetActive(false);
+        hasStarted = true;
     }
 }

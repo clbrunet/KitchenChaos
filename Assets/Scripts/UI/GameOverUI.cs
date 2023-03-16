@@ -9,6 +9,10 @@ public class GameOverUI : MonoBehaviour
 {
     [SerializeField] private TextMeshProUGUI recipesDeliveredText;
     [SerializeField] private Button mainMenuButton;
+    [SerializeField] private HostDisconnectedUI hostDisconnectedUI;
+
+    private bool hasStarted = false;
+    [HideInInspector] public bool shouldAppear = true;
 
     private void Awake()
     {
@@ -19,23 +23,32 @@ public class GameOverUI : MonoBehaviour
         });
     }
 
+    private void OnEnable()
+    {
+        if (!hasStarted)
+        {
+            return;
+        }
+        mainMenuButton.Select();
+    }
+
     private void Start()
     {
         GameManager.Instance.OnStateChanged += GameManager_OnStateChanged;
         gameObject.SetActive(false);
-    }
-
-    private void OnEnable()
-    {
-        mainMenuButton.Select();
+        hasStarted = true;
     }
 
     private void GameManager_OnStateChanged(object sender, GameManager.OnStateChangedEventArgs e)
     {
         if (e.state == GameManager.State.GameOver)
         {
-            gameObject.SetActive(true);
+            if (shouldAppear)
+            {
+                gameObject.SetActive(true);
+            }
             recipesDeliveredText.text = DeliveryManager.Instance.GetSuccessfulDeliveryCount().ToString();
+            hostDisconnectedUI.shouldAppear = false;
         }
         else
         {
